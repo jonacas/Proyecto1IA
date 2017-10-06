@@ -8,7 +8,9 @@ public class PlayerMovement : MonoBehaviour {
     public float speed;
     private float moveX;
     private float moveY;
-    private float rotateSpeed = 0.9f;
+    private Quaternion targetRotation;
+    public GameObject child;
+    private const float RotationSpeed = 380f;
 
     // Use this for initialization
     void Start () {
@@ -16,31 +18,71 @@ public class PlayerMovement : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
 
         ReadInputs();
-        MovePlayer();
+        
 	}
+
+    private void FixedUpdate()
+    {
+        MovePlayer();
+    }
 
     void MovePlayer()
     {
         transform.Translate(moveX, 0, moveY);
-        /*if (moveY < 0 && transform.localEulerAngles.y > -90f) {
+        child.transform.rotation = Quaternion.RotateTowards(child.transform.rotation,targetRotation,RotationSpeed * Time.fixedDeltaTime);
 
-            transform.localRotation = new Vector3(0, transform.localEulerAngles.y - rotateSpeed, 0);
-        }
-        else if (moveY > 0 && transform.localEulerAngles.y < 90f) {
-
-            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + rotateSpeed, 0);
-
-        }*/
     }
 
     void ReadInputs() {
 
-        moveX = Input.GetAxis("Horizontal");
-        moveY = Input.GetAxis("Vertical");
-        
+        moveX = Input.GetAxisRaw("Horizontal");
+        moveY = Input.GetAxisRaw("Vertical");
+
+        if (moveX > 0)
+        {
+
+            if (moveY > 0)
+            {
+                targetRotation = Quaternion.Euler(0, 45, 0);
+            }
+            else if (moveY < 0)
+            {
+                targetRotation = Quaternion.Euler(0, 135, 0);
+            }
+            else
+            {
+                targetRotation = Quaternion.Euler(0, 90, 0);
+            }
+        }
+        else if (moveX < 0)
+        {
+            if (moveY > 0)
+            {
+                targetRotation = Quaternion.Euler(0, 315, 0);
+            }
+            else if (moveY < 0)
+            {
+                targetRotation = Quaternion.Euler(0, 225, 0);
+            }
+            else
+            {
+                targetRotation = Quaternion.Euler(0, 270, 0);
+
+            }
+        }
+        else {
+            if (moveY > 0) {
+
+                targetRotation = Quaternion.Euler(0, 0, 0);
+            }
+            else if(moveY < 0) {
+                targetRotation = Quaternion.Euler(0, 180, 0);
+            }
+
+        }
 
     }
 }
