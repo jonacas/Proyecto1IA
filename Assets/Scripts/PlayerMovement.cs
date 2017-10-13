@@ -11,10 +11,12 @@ public class PlayerMovement : MonoBehaviour {
     private Quaternion targetRotation;
     public GameObject child;
     private const float RotationSpeed = 380f;
+	private const float moveSpeed = 10;
+	private Rigidbody RB;
 
     // Use this for initialization
     void Start () {
-		
+		RB = GetComponent<Rigidbody> ();
 	}
 	
 	// Update is called once per frame
@@ -26,12 +28,13 @@ public class PlayerMovement : MonoBehaviour {
 
     private void FixedUpdate()
     {
+		RB.velocity = Vector3.zero;
         MovePlayer();
     }
 
     void MovePlayer()
     {
-        transform.Translate(moveX, 0, moveY);
+		transform.Translate(moveX * Time.fixedDeltaTime * moveSpeed, 0, moveY * Time.fixedDeltaTime * moveSpeed);
         child.transform.rotation = Quaternion.RotateTowards(child.transform.rotation,targetRotation,RotationSpeed * Time.fixedDeltaTime);
 
     }

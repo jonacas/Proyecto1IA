@@ -17,9 +17,10 @@ public class CreacionGrafo : MonoBehaviour {
 	 * 
 	 * */
 
-	private GameObject nodoBase;
+	public GameObject GO_NodoBase;
 	private Vector3 esquina; //esquina complementaria que define el area del grafo
     public GameObject[,] nodeMap;
+	public GameObject GO_Esquina;
 
 
 	// Use this for initialization
@@ -35,8 +36,8 @@ public class CreacionGrafo : MonoBehaviour {
 		Node nodoActual;
         int num = 0; //para dar nombre a lons nodos
 
-		nodoBase = GameObject.Find ("NodoBase");
-		esquina = GameObject.Find ("Esquina").GetComponent<Transform> ().position;
+
+		esquina = GO_Esquina.transform.position;
 
 		incrementoX = (esquina.x - this.transform.position.x) / columnas;
 		incrementoZ = (esquina.z - this.transform.position.z) / filas;
@@ -54,7 +55,7 @@ public class CreacionGrafo : MonoBehaviour {
 				}
 
 				//si no, se instancia
-				aux = GameObject.Instantiate(nodoBase, testPos, this.transform.transform.rotation);
+				aux = GameObject.Instantiate(GO_NodoBase, testPos, this.transform.transform.rotation);
 				nodeMap [i, j] = aux;
                 aux.gameObject.name = "Nodo_" + System.Convert.ToString(++num);
 			}

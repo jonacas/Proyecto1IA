@@ -6,11 +6,15 @@ public class AEstrella : MonoBehaviour {
 
     public const bool MAS_PRECISO = true, MAS_RAPIDO = false;
 
-	public static Transform[] FindPath(Node origin, Node destiny, int capacity, bool precission)
+	public static List<Transform> FindPath(Node origin, Node destiny, int capacity, bool precission)
     {
        // Debug.Log("INICIO de nodo " + origin.gameObject.name + " a ndodo " + destiny.gameObject.name);
-        if (origin == destiny)
-			return new Transform[] { origin.gameObject.transform };
+		if (origin == destiny) {
+			List<Transform> aux = new List<Transform> ();
+			aux.Add(origin.gameObject.transform);
+			return aux;
+		}
+
 
         PriorityHeap abiertos = new PriorityHeap(capacity);
         List<Node> cerrados = new List<Node>();
@@ -72,7 +76,7 @@ public class AEstrella : MonoBehaviour {
 
         abiertos = null;
         cerrados.Clear();
-        return path.ToArray(); // borrar mas tarde
+        return path; // borrar mas tarde
     }
 
 	
