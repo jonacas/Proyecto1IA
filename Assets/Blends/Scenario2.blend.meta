@@ -1,47 +1,47 @@
 fileFormatVersion: 2
-guid: a90b4415f3d7ac9488e93f2adfa16fb4
-timeCreated: 1507233249
+guid: f8b547072ddd5ba4e9dc0b79f79724dc
+timeCreated: 1507902808
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
-    100000: ParedesNivel
-    100002: ParedInicial
-    100004: //RootNode
-    100006: SueloYMurosExteriores
-    100008: ParedesNivelCristal
-    100010: ParedInicialCristal
-    400000: ParedesNivel
-    400002: ParedInicial
-    400004: //RootNode
-    400006: SueloYMurosExteriores
-    400008: ParedesNivelCristal
-    400010: ParedInicialCristal
-    2300000: ParedesNivel
-    2300002: ParedInicial
-    2300004: SueloYMurosExteriores
-    2300006: ParedesNivelCristal
+    100000: Cube
+    100002: ParedesNivel
+    100004: ParedesNivelCristal
+    100006: ParedInicial
+    100008: ParedInicialCristal
+    100010: //RootNode
+    100012: SueloYMurosExteriores
+    400000: Cube
+    400002: ParedesNivel
+    400004: ParedesNivelCristal
+    400006: ParedInicial
+    400008: ParedInicialCristal
+    400010: //RootNode
+    400012: SueloYMurosExteriores
+    2300000: Cube
+    2300002: ParedesNivel
+    2300004: ParedesNivelCristal
+    2300006: ParedInicial
     2300008: ParedInicialCristal
-    3300000: ParedesNivel
-    3300002: ParedInicial
-    3300004: SueloYMurosExteriores
-    3300006: ParedesNivelCristal
+    2300010: SueloYMurosExteriores
+    3300000: Cube
+    3300002: ParedesNivel
+    3300004: ParedesNivelCristal
+    3300006: ParedInicial
     3300008: ParedInicialCristal
-    4300000: ParedesNivel
-    4300002: ParedInicial
-    4300004: SueloYMurosExteriores
-    4300006: ParedesNivelCristal
-    4300008: ParedInicialCristal
-    6400000: ParedesNivel
-    6400002: ParedInicial
-    6400004: SueloYMurosExteriores
-    6400006: ParedesNivelCristal
-    6400008: ParedInicialCristal
+    3300010: SueloYMurosExteriores
+    4300000: Cube
+    4300002: ParedesNivelCristal
+    4300004: ParedInicialCristal
+    4300006: ParedesNivel
+    4300008: ParedInicial
+    4300010: SueloYMurosExteriores
     7400000: Default Take
     9500000: //RootNode
   materials:
     importMaterials: 1
-    materialName: 1
+    materialName: 0
     materialSearch: 1
   animations:
     legacyGenerateAnimations: 4
@@ -68,11 +68,11 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 1
-    importVisibility: 0
+    addColliders: 0
+    importVisibility: 1
     importBlendShapes: 1
-    importCameras: 0
-    importLights: 0
+    importCameras: 1
+    importLights: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -88,7 +88,7 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
-    normalCalculationMode: 0
+    normalCalculationMode: 4
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
