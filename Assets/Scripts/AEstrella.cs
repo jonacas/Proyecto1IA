@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AEstrella : MonoBehaviour {
+public class AEstrella{
 
     public const bool MAS_PRECISO = true, MAS_RAPIDO = false;
 
-	public static List<Transform> FindPath(Node origin, Node destiny, int capacity, bool precission)
+	public static List<Transform> FindPath(Node origin, Node destiny, int capacity, bool precission, bool manhattan)
     {
        // Debug.Log("INICIO de nodo " + origin.gameObject.name + " a ndodo " + destiny.gameObject.name);
 		if (origin == destiny) {
@@ -39,7 +39,11 @@ public class AEstrella : MonoBehaviour {
                 if (actualNode.Cost + value.distancia < value.nodo.Cost)
                 {
                     value.nodo.Cost = actualNode.Cost + value.distancia;
-                    value.nodo.Estimated = value.nodo.Cost + Vector3.Distance(value.nodo.transform.position, destiny.transform.position);
+
+					if(manhattan)
+						value.nodo.Estimated = value.nodo.Cost + heuristicaManhattan(value.nodo.transform.position, destiny.transform.position);
+					else
+                    	value.nodo.Estimated = value.nodo.Cost + Vector3.Distance(value.nodo.transform.position, destiny.transform.position);
                     value.nodo.Route = actualNode;
                     if (value.nodo.QueuePosition == Node.EN_LISTA_CERRADOS) //Si esta en la lista de cerrados, lo sacamos de la lista
                         cerrados.Remove(value.nodo);
@@ -79,5 +83,12 @@ public class AEstrella : MonoBehaviour {
         return path; // borrar mas tarde
     }
 
-	
+	private static float heuristicaManhattan(Vector3 origen, Vector3 destino)
+	{
+		//la suma de las diferencias componente a componente en un espacio en 2 dimensiones
+		float diferencia = 0;
+		diferencia += Mathf.Abs (destino.x - origen.x);
+		diferencia += Mathf.Abs (destino.z - origen.z);
+		return diferencia;
+	}
 }

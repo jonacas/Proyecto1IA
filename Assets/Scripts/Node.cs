@@ -25,6 +25,7 @@ public class Node : MonoBehaviour{
     private float estimated;
     private Node route;
     private float cost;
+	private bool water;
 
     public Node Route
     {
@@ -86,6 +87,19 @@ public class Node : MonoBehaviour{
         }
     }
 
+	public bool Water
+	{
+		get
+		{
+			return water;
+		}
+
+		set
+		{
+			water = value;
+		}
+	}
+
     void Awake()
     {
         queuePosition = NO_ESTA_EN_LISTA_ABIERTOS;
@@ -107,6 +121,10 @@ public class Node : MonoBehaviour{
 				continue;
 			nodoActual = value.GetComponent<Node>();
 			distanciaActual = Vector3.Distance(transform.position, value.transform.position);
+
+			if (water || value.GetComponent<Node> ().water)
+				distanciaActual *= 3;
+			
 			if (nodoActual != null)
 			{
 				ArrayVecinos.Add(new Pareja(nodoActual, distanciaActual));

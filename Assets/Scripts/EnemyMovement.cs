@@ -6,7 +6,7 @@ public class EnemyMovement : MonoBehaviour {
 
 	private const float MOVE_SPEED = 5f;
 	private const float TURN_RATE = 360f;
-	private const float PATH_REACH_NODE_THS = 1f;
+	private const float PATH_REACH_NODE_THS = 3f;
 	private const float PATH_REACH_PLAYER_THS = 1f;
 	private const float PATH_STUCK_TIMELIMIT = 5f;
 
@@ -39,6 +39,14 @@ public class EnemyMovement : MonoBehaviour {
 	{
 		Player = StageData.currentInstance.GetPlayer ();
 		StageData.currentInstance.enemiesInStage.Add (this);
+		StartCoroutine ("FollowPlayer");
+	}
+	IEnumerator FollowPlayer()
+	{
+		while (true) {
+			SetNewPath(StageData.currentInstance.GetPathToTarget(transform, StageData.currentInstance.GetPlayer().transform));
+			yield return new WaitForSeconds (0.5f);
+		}
 	}
 	void Update()
 	{
@@ -71,7 +79,9 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	public void SetNewPath(List<Transform> newPath)
 	{
-		StopAllCoroutines ();
+		if (newPath == null)
+			return;
+		StopCoroutine ("FollowPath");
 		targetPathPositions = newPath;
 		StartCoroutine ("FollowPath");
 	}
