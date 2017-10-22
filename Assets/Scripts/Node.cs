@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 [System.Serializable]
 public struct Pareja
@@ -15,7 +16,8 @@ public struct Pareja
     }
 }
 
-public class Node : MonoBehaviour{
+public class Node : MonoBehaviour
+{
 
     public const int NO_ESTA_EN_LISTA_ABIERTOS = -1, EN_LISTA_CERRADOS = -2;
 
@@ -26,6 +28,11 @@ public class Node : MonoBehaviour{
     private Node route;
     private float cost;
 	private bool water;
+    private GameObject _gameObject = null;
+
+    //variables para cola prioridad
+    private float _prioridad;
+    private int _indiceCola;
 
     public Node Route
     {
@@ -100,41 +107,54 @@ public class Node : MonoBehaviour{
 		}
 	}
 
+    public float prioridad
+    {
+        get;
+        set;
+    }
+
+    public int indiceCola
+    {
+        get;
+        set;
+    }
+
+
     void Awake()
     {
         queuePosition = NO_ESTA_EN_LISTA_ABIERTOS;
         Cost = float.PositiveInfinity;
         
         arrayVecinos = new List<Pareja>();
-
 			
     }
 
-	public void SetVecinos(GameObject[] vecinos)
-	{
-		Node nodoActual;
-		float distanciaActual;
+    public void SetVecinos(GameObject[] vecinos)
+    {
+        Node nodoActual;
+        float distanciaActual;
 
-		foreach (GameObject value in vecinos)
-		{
-			if (value == null)
-				continue;
-			nodoActual = value.GetComponent<Node>();
-			distanciaActual = Vector3.Distance(transform.position, value.transform.position);
+        foreach (GameObject value in vecinos)
+        {
+            if (value == null)
+                continue;
+            nodoActual = value.GetComponent<Node>();
+            distanciaActual = Vector3.Distance(transform.position, value.transform.position);
 
-			if (water || value.GetComponent<Node> ().water)
-				distanciaActual *= 3;
-			
-			if (nodoActual != null)
-			{
-				ArrayVecinos.Add(new Pareja(nodoActual, distanciaActual));
-			}
-			else
-			{
-				Debug.Log("Error");
-			}
-		}
-	}
-		
+            if (Water || nodoActual.Water)
+                distanciaActual *= 3;
+
+            if (nodoActual != null)
+            {
+               ArrayVecinos.Add(new Pareja(nodoActual, distanciaActual));
+            }
+            else
+            {
+                Debug.Log("Error en setVecinos");
+            }
+        }
+    }
+
+
 
 }

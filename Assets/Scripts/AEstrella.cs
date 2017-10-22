@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 public class AEstrella{
 
@@ -16,62 +17,85 @@ public class AEstrella{
 		}
 
 
-        PriorityHeap abiertos = new PriorityHeap(capacity);
+        PriorityQueue abiertos = new PriorityQueue(capacity);
         List<Node> cerrados = new List<Node>();
         bool final = false;
-        Node actualNode, oldNode;
+        Node actualNode, oldNode, nodoOrigen, nodoDestino;
 
-        origin.Cost = 0;
-        origin.Route = null;
-        abiertos.Add(origin, origin.Cost);
+        nodoOrigen = origin.GetComponent<Node>();
+        nodoDestino = destiny.GetComponent<Node>();
+
+        nodoOrigen.Cost = 0;
+        nodoOrigen.Route = null;
+        abiertos.Encolar(nodoOrigen, nodoOrigen.Cost);
         actualNode = null;
+
         while (!final)
         {
             oldNode = actualNode;
-            actualNode = abiertos.ExtractMin();
+            actualNode = abiertos.Desencolar();
             if (actualNode == null) //si el monticulo se vaica
             {
                 actualNode = oldNode;
                 break;
             }
+
             foreach (Pareja value in actualNode.ArrayVecinos)
             {
+                //si se llega al nodo con un coste mejor
                 if (actualNode.Cost + value.distancia < value.nodo.Cost)
                 {
+                    //se actualiza el coste
                     value.nodo.Cost = actualNode.Cost + value.distancia;
 
+                    //calculamos nueva prioridad del nodo
 					if(manhattan)
-						value.nodo.Estimated = value.nodo.Cost + heuristicaManhattan(value.nodo.transform.position, destiny.transform.position);
-					else
-                    	value.nodo.Estimated = value.nodo.Cost + Vector3.Distance(value.nodo.transform.position, destiny.transform.position);
+						value.nodo.Estimated = value.nodo.Cost + heuristicaManhattan(value.nodo.gameObject.transform.position, destiny.transform.position);
+					else//euclideana
+                    	value.nodo.Estimated = value.nodo.Cost + Vector3.Distance(value.nodo.gameObject.transform.position, destiny.transform.position);
+
+                    //actualizar ruta hasta el nodo
                     value.nodo.Route = actualNode;
+
+
                     if (value.nodo.QueuePosition == Node.EN_LISTA_CERRADOS) //Si esta en la lista de cerrados, lo sacamos de la lista
                         cerrados.Remove(value.nodo);
-                   /* if (!abiertos.DecreasePriority(value.nodo, value.nodo.Estimated))
-                    {*/
-                        abiertos.Add(value.nodo, value.nodo.Estimated);
-                        //Debug.Log("Metido " + value.nodo.gameObject.name + " en abiertos con prioridad: " + value.nodo.Estimated);
-                   /* }
+
+                    //comprobamos si ya esta en abiertos
+                    if (abiertos.Contiene(value.nodo))
+                    {
+                        //si esta en la lista, reducimos su prioridad
+                        abiertos.ActualizarPrioridad(value.nodo, value.nodo.Estimated);
+                    }
                     else
-                        Debug.Log("Decrecentado " + value.nodo.gameObject.name + " en abiertos con prioridad: " + value.nodo.Estimated);*/
+                    {
+                        //si no esta, se encola
+                        abiertos.Encolar(value.nodo, value.nodo.Estimated);
+                    }
                 }
             }
+
+            //el nodo que hemos recorrido entra en cerrado
             cerrados.Add(actualNode);
             //Debug.Log("Metido " + actualNode.gameObject.name + " en cerrados");
             actualNode.QueuePosition = Node.EN_LISTA_CERRADOS;
             //Debug.Log("Peek = " + abiertos.Peek().gameObject.name); 
-            if (precission == false && abiertos.Peek() == destiny)
+
+
+            if (precission == false && abiertos.Primero == nodoDestino)
             {
                 final = true;
             }
-            else if (abiertos.Peek().Cost > destiny.Cost || abiertos.Peek() == null)
+            else if (abiertos.Primero.Cost > nodoDestino.Cost || abiertos.Primero == null)
             {
                 final = true;
             }
         }
-        //Retreiving path
+
+
+        //Devolver camino
 		List<Transform> path = new List<Transform>();
-        actualNode = destiny;                   //Reciclamos actualNode para usarlo como auxiliar
+        actualNode = nodoDestino;                   //Reciclamos actualNode para usarlo como auxiliar
         while (actualNode != null)
         {
 			path.Add(actualNode.gameObject.transform);

@@ -9,14 +9,14 @@ public class Grafo : MonoBehaviour {
 
     void Awake()
     {        
-        Node[] nodos = this.GetComponentsInChildren<Node>();
+       /* Node[] nodos = this.GetComponentsInChildren<Node>();
         grafo = new Dictionary<int, Node>();
 
         foreach (Node value in nodos)
         {
             grafo.Add(System.Convert.ToInt32(value.gameObject.name), value);             
-        }
-        //TestingAStar(AEstrella.FindPath(nodos[7], nodos[7], 8, false));
+        }*/
+        //TestingAStar(AEstrella.FindPath(_nodos[7], _nodos[7], 8, false));
     }
 
     public Node FindNode(int position)

@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CreacionGrafo : MonoBehaviour {
 
-	public int filas, columnas; //definen la cantidad de nodos del grafo
+	public int filas, columnas; //definen la cantidad de _nodos del grafo
 	public float radioTest;
 	/*
 	 * 		COLUMNAS (X)
@@ -35,13 +36,13 @@ public class CreacionGrafo : MonoBehaviour {
 		int obstacleLayer = 1<<8;
 		int waterLayer = 1 << 4;
 	
-		GameObject[] vectorAux = new GameObject[4];
+		GameObject[] vectorAux = new GameObject[8];
 		GameObject aux;
 		Node nodoActual;
-        int num = 0; //para dar nombre a lons nodos
+        int num = 0; //para dar nombre a lons _nodos
 
 		//agua.SetActive (false);
-		nodeMap = new GameObject[filas, columnas]; //almacena los nodos para asignar vecinos
+		nodeMap = new GameObject[filas, columnas]; //almacena los _nodos para asignar vecinos
 
 
 		esquina = GO_Esquina.transform.position;
@@ -64,35 +65,52 @@ public class CreacionGrafo : MonoBehaviour {
 				//si no, se instancia
 				aux = GameObject.Instantiate(GO_NodoBase, testPos, this.transform.transform.rotation);
 
+
 				//comprobacion de si el nodo está en el agua
 				//agua.SetActive (true);
 				if (Physics.OverlapSphere (testPos, radioTest, waterLayer).Length > 0)
 					aux.GetComponent<Node> ().Water = true;
+
 				nodeMap [i, j] = aux;
                 aux.gameObject.name = "Nodo_" + System.Convert.ToString(++num);
 			}
 		}
 
-		//recorremos el mapa de nodos y asignamos los vecinos
+		//recorremos el mapa de _nodos y asignamos los vecinos
 		for (int i = 0; i < filas; i++) {
 			for (int j = 0; j < columnas; j++) {
 				if(nodeMap[i,j] == null)
 					continue;
-				
-				nodoActual = nodeMap [i, j].GetComponent<Node> ();
 
-				vectorAux[0] = vectorAux[1] = vectorAux[2] = vectorAux[3] = null;
+                Array.Clear(vectorAux, 0, vectorAux.Length);
+				nodoActual = nodeMap [i, j].GetComponent<Node>();
 
-				if(i > 0)
-					vectorAux[0] = nodeMap[i-1, j];
-				if(i < filas - 1)
-					vectorAux[1] = nodeMap[i + 1, j];
-				if(j > 0)
-					vectorAux[2] = nodeMap[i, j - 1];
-				if(j < columnas - 1)
-					vectorAux[3] = nodeMap[i, j + 1];
 
-				nodoActual.SetVecinos(vectorAux);
+                if (i > 0)
+                { //fila sup
+                    vectorAux[0] = nodeMap[i - 1, j];
+                    if (j > 1)
+                        vectorAux[1] = nodeMap[i - 1, j - 1];
+                    if (j < columnas - 1)
+                        vectorAux[2] = nodeMap[i - 1, j + 1];
+                }
+
+                //fila inf
+                if (i < filas - 1)
+                {
+                    vectorAux[3] = nodeMap[i + 1, j];
+                    if (j > 1)
+                        vectorAux[4] = nodeMap[i + 1, j - 1];
+                    if (j < columnas - 1)
+                        vectorAux[5] = nodeMap[i + 1, j + 1];
+                }
+
+                if (j > 0)
+                    vectorAux[6] = nodeMap[i, j - 1];
+                if (j < columnas - 1)
+                    vectorAux[7] = nodeMap[i, j + 1];
+
+				nodoActual.GetComponent<Node>().SetVecinos(vectorAux);
 			}
 		}
 
@@ -101,7 +119,7 @@ public class CreacionGrafo : MonoBehaviour {
 				if(nodeMap[i,j] == null)
 					continue;
 
-				nodoActual = nodeMap [i, j].GetComponent<Node> ();
+				nodoActual = nodeMap [i, j].GetComponent<Node>();
 
 				for(int k = 0; i < 8; i++)
 					vectorAux[k] = null;
@@ -128,9 +146,9 @@ public class CreacionGrafo : MonoBehaviour {
 				if(j < columnas - 1)
 					vectorAux[7] = nodeMap[i, j + 1];
 
+                Debug.Log(vectorAux[1].name);
 				nodoActual.SetVecinos(vectorAux);
 			}
 		}*/
-	}
-
+	}	
 }
