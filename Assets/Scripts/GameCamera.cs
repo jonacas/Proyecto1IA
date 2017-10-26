@@ -10,20 +10,33 @@ public class GameCamera : MonoBehaviour {
 	private Vector3 previousMousePosition;
 	[Range(-100, 100)]
 	public float cameraRotationSpeed;
+	[Range(0, 200)]
+	public float cameraSpeed;
+	private float previousMouseDifference;
 
 	// Use this for initialization
 	void Start () {
 
-
+		Cursor.lockState = CursorLockMode.Locked;
+		cameraSpeed = 100f;
 
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 		camera.transform.LookAt (player.transform);
-		CalculateMousePosition ();
+		//CalculateMousePosition ();
+		differenceCameraPositionFromCenter();
 		camera.transform.RotateAround(player.transform.position, new Vector3 (0.0f, 1.0f, 0.0f), Time.deltaTime * cameraAngle);
 	}
+
+	void differenceCameraPositionFromCenter()
+	{
+		cameraAngle = Mathf.Lerp(previousMouseDifference, cameraSpeed * Input.GetAxis("Mouse X"), cameraSpeed);
+		previousMouseDifference = cameraSpeed * Input.GetAxis("Mouse X");
+	}
+
+
 
 	void CalculateMousePosition()
 	{
