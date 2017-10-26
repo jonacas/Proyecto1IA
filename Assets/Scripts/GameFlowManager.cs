@@ -18,15 +18,18 @@ public class GameFlowManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		if (Input.GetKeyDown (KeyCode.T)) 
+		if (Input.GetKeyDown (KeyCode.T)) //Abrir menu de pausa
 		{
 			endGameCanvas.SetActive(true);
 			Time.timeScale = 0f;
+			Cursor.lockState = CursorLockMode.None;
+
 		}
-		if (Input.GetKeyDown (KeyCode.P)) 
+		if (Input.GetKeyDown (KeyCode.P)) //Cerrar menu de pausa
 		{
 			endGameCanvas.SetActive(false);
 			Time.timeScale = 1f;
+			Cursor.lockState = CursorLockMode.Locked;
 		}
 		
 	}
@@ -36,6 +39,7 @@ public class GameFlowManager : MonoBehaviour {
 		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 		endGameCanvas.SetActive (false);
 		Time.timeScale = 1f;
+		Cursor.lockState = CursorLockMode.Locked;
 	}
 
 	 public void QuitToMainMenu()
