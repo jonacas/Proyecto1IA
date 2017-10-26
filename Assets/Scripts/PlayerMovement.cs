@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour {
 	private Rigidbody RB;
     public GameCamera cameraScript;
     private float offset;
+    private float offsetAux;
 
     // Use this for initialization
     void Start () {
@@ -46,8 +47,9 @@ public class PlayerMovement : MonoBehaviour {
 
     void CameraOffset() {
 
-        offset =+ cameraScript.cameraAngle;
-
+  
+        offsetAux += cameraScript.cameraAngle;
+        offset = offsetAux + transform.rotation.y;
     }
 
     void ReadInputs() {
@@ -57,45 +59,50 @@ public class PlayerMovement : MonoBehaviour {
 
 		Quaternion cameraRotation = new Quaternion (0f,camera.transform.rotation.y, 0f, camera.transform.rotation.w);
 
-        if (moveX > 0)
+        if (moveX > 0) //Se Mueve en X+
         {
 
             if (moveY > 0)
             {
-				targetRotation = cameraRotation * Quaternion.Euler(0, -45 + offset, 0); // Era (0, 45, 0)
+				targetRotation =  Quaternion.Euler(0, -45 , 0); // Era (0, 45, 0)
             }
             else if (moveY < 0)
             {
-				targetRotation = cameraRotation * Quaternion.Euler(0, 45 + offset, 0);// Era (0,135, 0)
+				targetRotation = Quaternion.Euler(0, 45 , 0);// Era (0,135, 0)
             }
             else
             {
-				targetRotation = cameraRotation * Quaternion.Euler(0, 0 + offset, 0); // Era (0, 90, 0)
+				targetRotation =  Quaternion.Euler(0, 0 , 0); // Era (0, 90, 0)
             }
         }
-        else if (moveX < 0)
+        else if (moveX < 0) // Se mueve en Y-
         {
             if (moveY > 0)
             {
-				targetRotation = cameraRotation * Quaternion.Euler(0, 225 + offset, 0); // Era (0, 315, 0)
+				targetRotation =  Quaternion.Euler(0, 225 , 0); // Era (0, 315, 0)
             }
             else if (moveY < 0)
             {
-				targetRotation = cameraRotation *  Quaternion.Euler(0, 135 + offset, 0); // Era (0, 225, 0)
+				targetRotation =   Quaternion.Euler(0, 135 , 0); // Era (0, 225, 0)
             }
             else
             {
-				targetRotation = cameraRotation *  Quaternion.Euler(0, 180 + offset, 0); // Era (0,270, 0)
+				targetRotation =   Quaternion.Euler(0, 180 , 0); // Era (0,270, 0)
 
             }
         }
-        else {
-            if (moveY > 0) {
+        else { // X+
+            if (moveY > 0)
+            {
 
-				targetRotation = cameraRotation * Quaternion.Euler(0, -90 + offset, 0); // Era (0,0,0)
+                targetRotation =  Quaternion.Euler(0, -90 , 0); // Era (0,0,0)
             }
-            else if(moveY < 0) {
-				targetRotation = cameraRotation *  Quaternion.Euler(0, 90 + offset, 0); // Era (0, 180, 0)
+            else if (moveY < 0)
+            {
+                targetRotation =  Quaternion.Euler(0, 90 , 0); // Era (0, 180, 0)
+            }
+            else {
+                targetRotation = cameraRotation * Quaternion.Euler(0,-90, 0);
             }
 
         }
