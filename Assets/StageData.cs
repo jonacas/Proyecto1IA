@@ -24,10 +24,10 @@ public class StageData : MonoBehaviour {
 
 		Node inicio, final;
 
-		int initX = (int)(requester.transform.position.x / CG.incrementoX);
-		int initZ = (int)(requester.transform.position.z / CG.incrementoZ);
-		int finalX = (int)(target.transform.position.x / CG.incrementoX);
-		int finalZ = (int)(target.transform.position.z / CG.incrementoZ);
+		int initX = (int) Mathf.Round(requester.transform.position.x / CG.incrementoX);
+		int initZ = (int) Mathf.Round(requester.transform.position.z / CG.incrementoZ);
+		int finalX = (int) Mathf.Round(target.transform.position.x / CG.incrementoX);
+		int finalZ = (int) Mathf.Round(target.transform.position.z / CG.incrementoZ);
 
 		if (initX < 0 || initX >= CG.filas || initZ < 0 || initZ >= CG.columnas || finalX < 0 || finalX >= CG.filas || finalZ < 0 || finalZ >= CG.columnas)
 			return null;

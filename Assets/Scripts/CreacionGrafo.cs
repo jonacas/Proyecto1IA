@@ -88,27 +88,36 @@ public class CreacionGrafo : MonoBehaviour {
 
                 if (i > 0)
                 { //fila sup
-                    vectorAux[0] = nodeMap[i - 1, j];
+
+					if(comprobarAccesible(nodoActual.gameObject, nodeMap[i - 1, j]))
+                    	vectorAux[0] = nodeMap[i - 1, j];
                     if (j > 1)
-                        vectorAux[1] = nodeMap[i - 1, j - 1];
+						if(comprobarAccesible(nodoActual.gameObject, nodeMap[i - 1, j - 1]))
+                        	vectorAux[1] = nodeMap[i - 1, j - 1];
                     if (j < columnas - 1)
-                        vectorAux[2] = nodeMap[i - 1, j + 1];
+					if(comprobarAccesible(nodoActual.gameObject, nodeMap[i - 1, j + 1]))
+                        	vectorAux[2] = nodeMap[i - 1, j + 1];
                 }
 
                 //fila inf
                 if (i < filas - 1)
                 {
-                    vectorAux[3] = nodeMap[i + 1, j];
+					if(comprobarAccesible(nodoActual.gameObject, nodeMap[i + 1, j]))
+                    	vectorAux[3] = nodeMap[i + 1, j];
                     if (j > 1)
-                        vectorAux[4] = nodeMap[i + 1, j - 1];
+						if(comprobarAccesible(nodoActual.gameObject, nodeMap[i + 1, j - 1]))
+                        	vectorAux[4] = nodeMap[i + 1, j - 1];
                     if (j < columnas - 1)
-                        vectorAux[5] = nodeMap[i + 1, j + 1];
+						if(comprobarAccesible(nodoActual.gameObject, nodeMap[i + 1, j + 1]))
+                        	vectorAux[5] = nodeMap[i + 1, j + 1];
                 }
 
                 if (j > 0)
-                    vectorAux[6] = nodeMap[i, j - 1];
+					if(comprobarAccesible(nodoActual.gameObject, nodeMap[i, j - 1]))
+                    	vectorAux[6] = nodeMap[i, j - 1];
                 if (j < columnas - 1)
-                    vectorAux[7] = nodeMap[i, j + 1];
+					if(comprobarAccesible(nodoActual.gameObject, nodeMap[i, j + 1]))
+                    	vectorAux[7] = nodeMap[i, j + 1];
 
 				nodoActual.GetComponent<Node>().SetVecinos(vectorAux);
 			}
@@ -150,5 +159,14 @@ public class CreacionGrafo : MonoBehaviour {
 				nodoActual.SetVecinos(vectorAux);
 			}
 		}*/
-	}	
+	}
+
+	bool comprobarAccesible(GameObject a, GameObject b)
+	{
+		if (b == null)
+			return false;
+		return !Physics.Raycast (a.transform.position, b.transform.position -
+		a.transform.position, Vector3.Distance (a.transform.position, b.transform.position));
+
+	}
 }
