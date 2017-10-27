@@ -18,12 +18,13 @@ public class LevelIntroAnimation : MonoBehaviour {
 	private Vector3 separationLineInitialPos;
 
 	// Use this for initialization
-	void Awake () {
+	void Start () {
 		levelNameInitialPos = levelName.transform.localPosition;
 		levelDescInitialPos = levelDesc.transform.localPosition;
 		separationLineInitialPos = introLine.transform.localPosition;
 		levelName.text = levelNameDisplayedString;
 		levelDesc.text = levelDescDisplayedString;
+        PlayIntroAnimation();
 	}
 	IEnumerator LevelIntro()
 	{

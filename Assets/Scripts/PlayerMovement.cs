@@ -35,8 +35,10 @@ public class PlayerMovement : MonoBehaviour {
     private void FixedUpdate()
     {
 		RB.velocity = Vector3.zero;
+        RB.angularVelocity = Vector3.zero;
         MovePlayer();
         CameraOffset();
+        
         
     }
 

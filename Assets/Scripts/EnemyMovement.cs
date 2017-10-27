@@ -6,7 +6,7 @@ public class EnemyMovement : MonoBehaviour {
 
 	private const float MOVE_SPEED = 5f;
 	private const float TURN_RATE = 360f;
-	private const float PATH_REACH_NODE_THS = 3f;
+	public float PATH_REACH_NODE_THS = 3f;
 	private const float PATH_REACH_PLAYER_THS = 1f;
 	private const float PATH_STUCK_TIMELIMIT = 5f;
 
