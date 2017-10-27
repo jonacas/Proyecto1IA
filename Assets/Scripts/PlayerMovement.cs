@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour {
 
 	public GameObject camera;
+    public Material diamante;
     private float moveX;
     private float moveY;
     private Quaternion targetRotation;
@@ -20,12 +21,14 @@ public class PlayerMovement : MonoBehaviour {
     // Use this for initialization
     void Start () {
 		RB = GetComponent<Rigidbody> ();
-	}
+        diamante.renderQueue = 3800;
+    }
 	
 	// Update is called once per frame
 	void Update () {
 
         ReadInputs();
+        
         
 	}
 
