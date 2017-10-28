@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class MainMenuManager : MonoBehaviour {
+public class PauseMenuManager : MonoBehaviour {
 
 	public List<GameObject> buttons;
 
 	public CanvasGroup loadingCG;
 	public CanvasGroup loadingTextCG;
+
+	public CanvasGroup pauseMenuCG;
 
 	public CanvasGroup settingsCG;
 	public Slider settingsSlider;
@@ -17,9 +19,13 @@ public class MainMenuManager : MonoBehaviour {
 	private float targetScaleX = 1.75f;
 	private List<float> targetScales;
 	private float animSpeed = 4f;
+	private float menuFadeSpeed = 6.5f;
 
 	private bool subMenuOpen = false;
 	private bool blockInputs = false;
+	private bool gamePaused = false;
+
+	private bool fadeAnimationInProgress = false;
 
 	private Vector3 loadingTextInitialPos;
 
@@ -28,14 +34,41 @@ public class MainMenuManager : MonoBehaviour {
 		targetScales = new List<float> { 1, 1, 1 };
 		loadingTextInitialPos = loadingTextCG.transform.localPosition;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		if (!subMenuOpen) {
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			if (gamePaused) {
+				UnpauseGame ();
+			} else {
+				PauseGame ();
+			}
+		}
+		if (!subMenuOpen && gamePaused) {
 			for (int i = 0; i < buttons.Count; i++) {
 				buttons [i].transform.localScale = new Vector3 (Mathf.MoveTowards(buttons[i].transform.localScale.x, 
-					targetScales[i], Time.deltaTime * animSpeed),1,1); 
+					targetScales[i], Time.unscaledDeltaTime * animSpeed),1,1); 
 			}
+		}
+	}
+	public void UnpauseGame()
+	{
+		if (fadeAnimationInProgress)
+			return;
+		StartCoroutine ("FadeOut");
+		gamePaused = false;
+		Time.timeScale = 1;
+	}
+	public void PauseGame()
+	{
+		if (fadeAnimationInProgress)
+			return;
+		StartCoroutine ("FadeIn");
+		gamePaused = true;
+		Time.timeScale = 0;
+		for (int i = 0; i < buttons.Count; i++) {
+			buttons [i].transform.localScale = Vector3.one;
+			targetScales [i] = 1;
 		}
 	}
 
@@ -52,11 +85,11 @@ public class MainMenuManager : MonoBehaviour {
 	{
 		if (blockInputs)
 			return;
-		
+
 		switch (index) {
-		case 0: // Play
+		case 0: // Continue
 			{
-				StartCoroutine ("LoadingScreen");
+				UnpauseGame ();
 				break;
 			}
 		case 1: // Settings
@@ -66,7 +99,7 @@ public class MainMenuManager : MonoBehaviour {
 			}
 		case 2: // Quit
 			{
-				Application.Quit ();
+				StartCoroutine ("BackToMainMenu");
 				break;
 			}
 		}
@@ -79,6 +112,30 @@ public class MainMenuManager : MonoBehaviour {
 	{
 		GlobalGameData.currentInstance.SetMouseSens (settingsSlider.value);
 	}
+	IEnumerator FadeIn()
+	{
+		pauseMenuCG.gameObject.SetActive (true);
+		fadeAnimationInProgress = true;
+		float t = 0;
+		while (t < 1) {
+			t = Mathf.MoveTowards (t, 1, Time.unscaledDeltaTime * menuFadeSpeed);
+			pauseMenuCG.alpha = t;
+			yield return null;
+		}
+		fadeAnimationInProgress = false;
+	}
+	IEnumerator FadeOut()
+	{
+		fadeAnimationInProgress = true;
+		float t = 1;
+		while (t > 0) {
+			t = Mathf.MoveTowards (t, 0, Time.unscaledDeltaTime * menuFadeSpeed);
+			pauseMenuCG.alpha = t;
+			yield return null;
+		}
+		fadeAnimationInProgress = false;
+		pauseMenuCG.gameObject.SetActive (false);
+	}
 	IEnumerator OpenSettingsMenu()
 	{
 		settingsCG.gameObject.SetActive (true);
@@ -87,7 +144,7 @@ public class MainMenuManager : MonoBehaviour {
 		settingsSlider.value = GlobalGameData.currentInstance.settingMouseSens;
 		float t = 0;
 		while (t < 1) {
-			t = Mathf.MoveTowards (t, 1, Time.deltaTime * animSpeed * 2f);
+			t = Mathf.MoveTowards (t, 1, Time.unscaledDeltaTime * animSpeed * 2f);
 			settingsCG.alpha = t;
 			yield return null;
 		}
@@ -98,7 +155,7 @@ public class MainMenuManager : MonoBehaviour {
 		blockInputs = true;
 		float t = 1;
 		while (t > 0) {
-			t = Mathf.MoveTowards (t, 0, Time.deltaTime * animSpeed * 2f);
+			t = Mathf.MoveTowards (t, 0, Time.unscaledDeltaTime * animSpeed * 2f);
 			settingsCG.alpha = t;
 			yield return null;
 		}
@@ -113,31 +170,32 @@ public class MainMenuManager : MonoBehaviour {
 
 		float t = 0;
 		while (t < 1) {
-			t = Mathf.MoveTowards (t, 1, Time.deltaTime * animSpeed);
+			t = Mathf.MoveTowards (t, 1, Time.unscaledDeltaTime * animSpeed);
 			loadingCG.alpha = t;
 			yield return null;
 		}
 		// Cambiad la escena por la que toque, puse 1 por poner algo.
-		AsyncOperation AO = SceneManager.LoadSceneAsync(1);
+		AsyncOperation AO = SceneManager.LoadSceneAsync(0);
 		AO.allowSceneActivation = false;
 
 		t = 0;
 		while (AO.progress < 0.9f || t < 1) {
-			t = Mathf.MoveTowards (t, 1, Time.deltaTime * animSpeed);
+			t = Mathf.MoveTowards (t, 1, Time.unscaledDeltaTime * animSpeed);
 			loadingTextCG.transform.localPosition = loadingTextInitialPos + Vector3.left * 200 * (1 - t);		
 			loadingTextCG.alpha = t;
 			yield return null;
 		}
-		yield return new WaitForSeconds (0.25f);
+		yield return new WaitForSecondsRealtime (0.25f);
 		t = 1;
 		while (t > 0) {
-			t = Mathf.MoveTowards (t, 0, Time.deltaTime * animSpeed);
+			t = Mathf.MoveTowards (t, 0, Time.unscaledDeltaTime * animSpeed);
 			loadingTextCG.transform.localPosition = loadingTextInitialPos + Vector3.right * 200 * (1 - t);
 			loadingTextCG.alpha = t;
 			yield return null;
-			
+
 		}
-		yield return new WaitForSeconds (0.25f);
+		yield return new WaitForSecondsRealtime (0.25f);
 		AO.allowSceneActivation = true;
+		Time.timeScale = 1;
 	}
 }
