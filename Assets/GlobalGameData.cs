@@ -10,6 +10,10 @@ public class GlobalGameData : MonoBehaviour {
 
 	void Awake()
 	{
+		if (currentInstance != null) {
+			Destroy (this.gameObject);
+			return;
+		}
 		DontDestroyOnLoad (this.gameObject);
 		settingMouseSens = 1f;
 		currentInstance = this;

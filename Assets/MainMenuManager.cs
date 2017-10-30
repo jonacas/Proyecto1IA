@@ -106,7 +106,7 @@ public class MainMenuManager : MonoBehaviour {
 		subMenuOpen = false;
 		settingsCG.gameObject.SetActive (false);
 	}
-	IEnumerator BackToMainMenu()
+	IEnumerator LoadingScreen()
 	{
 		loadingCG.gameObject.SetActive (true);
 		blockInputs = true;
