@@ -29,10 +29,18 @@ public class EnemyMovement : MonoBehaviour {
 
 	public int enemyIDStage;
 	public int enemyIDStagePart;
-	private float playerUnseendeltaTime;
 
 	private EnemyState currentState;
 	private Transform beforeAlert;
+
+	public Transform startPatrolPoint;
+	public Transform endPatrolPoint;
+
+	public Transform[] patrolRoute; //Falta por implementar esto
+	private int currentPatrolPosition;
+
+	public bool playerCaptured = false;
+	public float thresholdEnemyCapture;
 
 	public enum EnemyState
 	{
@@ -45,6 +53,7 @@ public class EnemyMovement : MonoBehaviour {
 	void Start()
 	{
 		currentState = EnemyState.Patrolling;
+		currentPatrolPosition = 0;
 		Player = StageData.currentInstance.GetPlayer ();
 		StageData.currentInstance.enemiesInStage.Add (this);
 		StartCoroutine ("FollowPlayer");
@@ -62,7 +71,6 @@ public class EnemyMovement : MonoBehaviour {
 		{
 			enemyLight.color = Color.red;
 			StageData.currentInstance.SendAlert (this, Player.transform);
-
 		} 
 		else 
 		{
@@ -138,34 +146,57 @@ public class EnemyMovement : MonoBehaviour {
 				transform.rotation = auxRotation;
 				transform.rotation = Quaternion.RotateTowards (transform.rotation, target_rotation, TURN_RATE * moveMultiplier * Time.deltaTime);
 
-				transform.Translate (Vector3.forward * MOVE_SPEED * moveMultiplier * Time.deltaTime);
+				if (!playerCaptured) 
+				{
+					transform.Translate (Vector3.forward * MOVE_SPEED * moveMultiplier * Time.deltaTime);
+				}
+
+				if (Vector3.Distance (transform.position, Player.transform.position) < thresholdEnemyCapture) 
+				{
+					PlayerCatched ();
+					playerCaptured = true;
+				}
+
 				yield return null;
 			}
 			targetPathPositions.RemoveAt (0);
 			previousValidUnstuckNode = transform.position;
 		}
-		if (currentState == EnemyState.Alert) //Hemos llegado al final del camino, Y NO HEMOS ENCONTRADO NADA!!!
-		{
+		//Hemos llegado al final del camino.... [COMPROBAR QUE NO LLEGA HASTA AQUI SIN TERMINAR EL CAMINO]
+		if (currentState == EnemyState.Alert) {
 			List<Transform> newRoute = 
-			StageData.currentInstance.GetPathToTarget (transform, beforeAlert);
+				StageData.currentInstance.GetPathToTarget (transform, beforeAlert);
 			SetNewPath (newRoute);
+			SetState (EnemyState.Patrolling);
+		} 
+		else if (currentState == EnemyState.Patrolling && targetPathPositions.Count == 0) //Por si acaso, la verdad... 
+		{
+			//Si el enemigo esta mas cerca de un punto que de otro, irá hacia el otro.
+			if (Vector3.Distance (transform.position, startPatrolPoint) < Vector3.Distance (transform.position, endPatrolPoint)) {
+				List<Transform> newRoute = 
+					StageData.currentInstance.GetPathToTarget (transform, endPatrolPoint);
+				SetNewPath (newRoute);
+			} 
+			else 
+			{
+				List<Transform> newRoute = 
+					StageData.currentInstance.GetPathToTarget (transform, startPatrolPoint);
+				SetNewPath (newRoute);
+				SetState (EnemyState.Patrolling);
+			}
+
 		}
 
+
+
 	}
 
-	public void playerEvasionManager()
+	public bool IsEnemyPatrolling() {return currentState == EnemyState.Patrolling;}
+
+	public void PlayerCatched()
 	{
-		//Si el enemigo llega al final del camino, se dará la vuelta a su puesto anterior.
-		//Al volver, retoma su ruta.
-
-
-
-
-
-
+		
 	}
-
-
 
 
 }
