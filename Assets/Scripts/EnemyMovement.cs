@@ -32,6 +32,7 @@ public class EnemyMovement : MonoBehaviour {
 	private float playerUnseendeltaTime;
 
 	private EnemyState currentState;
+	private Transform beforeAlert;
 
 	public enum EnemyState
 	{
@@ -87,6 +88,10 @@ public class EnemyMovement : MonoBehaviour {
 			}
 		case EnemyState.Alert:
 			{
+				if (currentState != EnemyState.Alert) 
+				{
+					beforeAlert = transform;
+				}
 				currentState = EnemyState.Alert;
 				moveMultiplier = 1.5f;
 				break;
@@ -141,7 +146,9 @@ public class EnemyMovement : MonoBehaviour {
 		}
 		if (currentState == EnemyState.Alert) //Hemos llegado al final del camino, Y NO HEMOS ENCONTRADO NADA!!!
 		{
-			
+			List<Transform> newRoute = 
+			StageData.currentInstance.GetPathToTarget (transform, beforeAlert);
+			SetNewPath (newRoute);
 		}
 
 	}
