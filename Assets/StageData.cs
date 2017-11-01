@@ -6,7 +6,11 @@ public class StageData : MonoBehaviour {
 
 	public GameObject player;
 	public static StageData currentInstance;
+
 	public List<EnemyMovement> enemiesInStage;
+	public List<EnemyMovement> enemiesInStage2;
+	public List<EnemyMovement> enemiesInStage3;
+
 
 	public CreacionGrafo CG;
 
@@ -48,5 +52,115 @@ public class StageData : MonoBehaviour {
 
 		return camino;
 	}
+
+	public void SendAlert(EnemyMovement self, Transform detectedPos)
+	{
+		switch (self.enemyIDStage)
+		{
+			case 1: // En este caso, va directamente a por el jugador: activara el dialogo de alerta,
+			{		// Pero como no hay nadie mas, pues le perseguira.
+				enemiesInStage[0].SetState (EnemyMovement.EnemyState.InCombat);
+				List<Transform> newRoute = GetPathToTarget (enemiesInStage[0].transform, detectedPos);
+				enemiesInStage[0].SetNewPath (newRoute);
+				break;
+			}
+			case 2: //Tiene tres zonas
+			{
+				switch (self.enemyIDStagePart) 
+				{
+					case 1:
+					{	
+						for (int i = 0; i < enemiesInStage2.Count; i++) 
+						{
+							if (enemiesInStage2 [i].enemyIDStagePart == 1) 
+							{
+								enemiesInStage2[i].SetState (EnemyMovement.EnemyState.Alert);
+								List<Transform> newRoute = GetPathToTarget (enemiesInStage2[i].transform, detectedPos);
+								enemiesInStage2[i].SetNewPath (newRoute);
+							}
+						}
+						break;
+					}
+					case 2: 
+					{
+						for (int i = 0; i < enemiesInStage2.Count; i++) 
+						{
+							enemiesInStage2[i].SetState (EnemyMovement.EnemyState.Alert);
+							List<Transform> newRoute = GetPathToTarget (enemiesInStage2[i].transform, detectedPos);
+							enemiesInStage2[i].SetNewPath (newRoute);
+						}
+						break;
+					}
+					case 3:
+					{
+						for (int i = 0; i < enemiesInStage2.Count; i++) 
+						{
+							enemiesInStage2[i].SetState (EnemyMovement.EnemyState.Alert);
+							List<Transform> newRoute = GetPathToTarget (enemiesInStage2[i].transform, detectedPos);
+							enemiesInStage2[i].SetNewPath (newRoute);
+						}
+						break;
+					}
+
+				}
+				break;
+			}
+			case 3: // Tiene cuatro zonas
+			{
+				switch (self.enemyIDStagePart) 
+				{
+				case 1:
+					{	
+						for (int i = 0; i < enemiesInStage3.Count; i++) 
+						{
+							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
+							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
+							enemiesInStage3[i].SetNewPath (newRoute);
+						}
+						break;
+					}
+				case 2: 
+					{
+						for (int i = 0; i < enemiesInStage3.Count; i++) 
+						{
+							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
+							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
+							enemiesInStage3[i].SetNewPath (newRoute);
+						}
+						break;
+					}
+				case 3:
+					{
+						for (int i = 0; i < enemiesInStage3.Count; i++) 
+						{
+							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
+							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
+							enemiesInStage3[i].SetNewPath (newRoute);
+						}
+						break;
+					}
+				case 4:
+					{
+						for (int i = 0; i < enemiesInStage3.Count; i++) 
+						{
+							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
+							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
+							enemiesInStage3[i].SetNewPath (newRoute);
+						}
+						break;
+					}
+				}
+				break;
+
+			}
+		}
+
+
+	}
+
+
+
+
+
 		
 }

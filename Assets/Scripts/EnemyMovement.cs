@@ -25,18 +25,25 @@ public class EnemyMovement : MonoBehaviour {
 	private RaycastHit objectHitted;
 	private Vector2 VectorBetweenPlayerAndEnemy, VectorFordwardEnemy;
 
-
 	public Light enemyLight;
+
+	public int enemyIDStage;
+	public int enemyIDStagePart;
+	private float playerUnseendeltaTime;
+
+	private EnemyState currentState;
 
 	public enum EnemyState
 	{
-		NoCombat,
+		Patrolling,
 		Alert,
+		Informing,
 		InCombat
 	}
 
 	void Start()
 	{
+		currentState = EnemyState.Patrolling;
 		Player = StageData.currentInstance.GetPlayer ();
 		StageData.currentInstance.enemiesInStage.Add (this);
 		StartCoroutine ("FollowPlayer");
@@ -50,29 +57,44 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	void Update()
 	{
-		if (IsPlayerInVisionRange ()) {
+		if (IsPlayerInVisionRange ()) 
+		{
 			enemyLight.color = Color.red;
-		} else
+			StageData.currentInstance.SendAlert (this, Player.transform);
+
+		} 
+		else 
+		{
 			enemyLight.color = Color.white;
+		}
 	}
 
 	public void SetState(EnemyState newstate)
 	{
 		switch (newstate)
 		{
-		case EnemyState.NoCombat:
+		case EnemyState.Patrolling:
 			{
-				moveMultiplier = 1;
+				currentState = EnemyState.Patrolling;
+				moveMultiplier = 1f;
+				break;
+			}
+		case EnemyState.Informing:
+			{
+				currentState = EnemyState.Informing;
+				moveMultiplier = 0.8f;
 				break;
 			}
 		case EnemyState.Alert:
 			{
+				currentState = EnemyState.Alert;
 				moveMultiplier = 1.5f;
 				break;
 			}
 		case EnemyState.InCombat:
 			{
-				moveMultiplier = 2;
+				currentState = EnemyState.InCombat;
+				moveMultiplier = 2f;
 				break;
 			}
 		}
@@ -117,6 +139,26 @@ public class EnemyMovement : MonoBehaviour {
 			targetPathPositions.RemoveAt (0);
 			previousValidUnstuckNode = transform.position;
 		}
+		if (currentState == EnemyState.Alert) //Hemos llegado al final del camino, Y NO HEMOS ENCONTRADO NADA!!!
+		{
+			
+		}
+
 	}
+
+	public void playerEvasionManager()
+	{
+		//Si el enemigo llega al final del camino, se dará la vuelta a su puesto anterior.
+		//Al volver, retoma su ruta.
+
+
+
+
+
+
+	}
+
+
+
 
 }
