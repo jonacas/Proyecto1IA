@@ -40,7 +40,7 @@ public class EnemyMovement : MonoBehaviour {
 	private int currentPatrolPosition;
 
 	public bool playerCaptured = false;
-	public float thresholdEnemyCapture;
+	public float thresholdEnemyCapture = 5f;
 
 	public enum EnemyState
 	{
@@ -72,15 +72,24 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	void Update()
 	{
-		if (IsPlayerInVisionRange ()) 
+		if (Vector3.Distance (transform.position, Player.transform.position) < thresholdEnemyCapture)
+		{
+			PlayerCatched ();
+			playerCaptured = true;
+			StopCoroutine ("FollowPath");
+			//print ("Hemos parado corutina del enemigo");
+		}
+		else if (!playerCaptured && IsPlayerInVisionRange ()) 
 		{
 			enemyLight.color = Color.red;
 			StageData.currentInstance.SendAlert (this, Player.transform);
+			//print ("Iniciamos protocolo de aviso a enemigos");
 		} 
 		else 
 		{
 			enemyLight.color = Color.white;
 		}
+
 	}
 
 	public void SetState(EnemyState newstate)
@@ -101,9 +110,11 @@ public class EnemyMovement : MonoBehaviour {
 			}
 		case EnemyState.Alert:
 			{
+				//print ("Actualizamos estado a estado de Alerta");
 				if (currentState != EnemyState.Alert) 
 				{
 					beforeAlert = transform;
+					//print ("Añadimos posicion a la que volver despues");
 				}
 				currentState = EnemyState.Alert;
 				moveMultiplier = 1.5f;
@@ -119,11 +130,13 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	public void SetNewPath(List<Transform> newPath)
 	{
+		//print ("Iniciamos el desarrollo de caminos para el jugador");
 		if (newPath == null)
 			return;
 		StopCoroutine ("FollowPath");
 		targetPathPositions = newPath;
 		StartCoroutine ("FollowPath");
+		//print ("Parado y restarteado nuevo camino de enemigo");
 	}
 
 	public bool IsPlayerInVisionRange()
@@ -134,6 +147,7 @@ public class EnemyMovement : MonoBehaviour {
 		if (Vector3.Distance (transform.position, Player.transform.position) < SafetyDistance &&
 			Vector2.Angle (VectorBetweenPlayerAndEnemy, VectorFordwardEnemy) < SafetyAngle)
 		{
+			//print ("Detectamos choque con algo");
 			Physics.Raycast (transform.position, (Player.transform.position - transform.position).normalized, out objectHitted/*, 15f, layerDefault*/);
 			return objectHitted.collider.gameObject.tag == "Player";
 		} 
@@ -154,16 +168,8 @@ public class EnemyMovement : MonoBehaviour {
 				transform.rotation = auxRotation;
 				transform.rotation = Quaternion.RotateTowards (transform.rotation, target_rotation, TURN_RATE * moveMultiplier * Time.deltaTime);
 
-				if (!playerCaptured) 
-				{
-					transform.Translate (Vector3.forward * MOVE_SPEED * moveMultiplier * Time.deltaTime);
-				} 
-				else if (Vector3.Distance (transform.position, Player.transform.position) < thresholdEnemyCapture)
-				{
-					PlayerCatched ();
-					playerCaptured = true;
-				}
-
+				transform.Translate (Vector3.forward * MOVE_SPEED * moveMultiplier * Time.deltaTime); 
+				//print ("Nos movemos hacia objetivo");
 				yield return null;
 			}
 			targetPathPositions.RemoveAt (0);
@@ -175,7 +181,7 @@ public class EnemyMovement : MonoBehaviour {
 				StageData.currentInstance.GetPathToTarget (transform, beforeAlert);
 			SetNewPath (newRoute);
 			SetState (EnemyState.Patrolling);
-
+			//print ("volvemos a la patrulla");
 		} 
 		else if (currentState == EnemyState.Patrolling && targetPathPositions.Count == 0) //Por si acaso, la verdad... 
 		{
@@ -185,6 +191,7 @@ public class EnemyMovement : MonoBehaviour {
 				List<Transform> newRoute = 
 					StageData.currentInstance.GetPathToTarget (transform, endPatrolPoint);
 				SetNewPath (newRoute);
+				//print ("volvemos a anterior puesto de patrulla");
 			} 
 			else 
 			{
@@ -192,6 +199,7 @@ public class EnemyMovement : MonoBehaviour {
 					StageData.currentInstance.GetPathToTarget (transform, startPatrolPoint);
 				SetNewPath (newRoute);
 				SetState (EnemyState.Patrolling);
+				//print ("volvemos a anterior puesto de patrulla");
 			}
 
 		}
