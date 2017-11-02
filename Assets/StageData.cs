@@ -55,13 +55,21 @@ public class StageData : MonoBehaviour {
 
 	public void SendAlert(EnemyMovement self, Transform detectedPos)
 	{
+		if (self.enemyIDStage == 1 && self.enemyIDStagePart == 1) 
+		{
+			enemiesInStage[0].SetState (EnemyMovement.EnemyState.Alert);
+			List<Transform> newRoute = GetPathToTarget (enemiesInStage[0].transform, detectedPos);
+			enemiesInStage[0].SetNewPath (newRoute);
+			print ("entered in alert state");
+		}
 		switch (self.enemyIDStage)
 		{
 			case 1: // En este caso, va directamente a por el jugador: activara el dialogo de alerta,
 			{		// Pero como no hay nadie mas, pues le perseguira.
-				enemiesInStage[0].SetState (EnemyMovement.EnemyState.InCombat);
+				enemiesInStage[0].SetState (EnemyMovement.EnemyState.Alert);
 				List<Transform> newRoute = GetPathToTarget (enemiesInStage[0].transform, detectedPos);
 				enemiesInStage[0].SetNewPath (newRoute);
+				print ("entered in alert state");
 				break;
 			}
 			case 2: //Tiene tres zonas
