@@ -55,8 +55,13 @@ public class EnemyMovement : MonoBehaviour {
 		currentState = EnemyState.Patrolling;
 		currentPatrolPosition = 0;
 		Player = StageData.currentInstance.GetPlayer ();
-		StageData.currentInstance.enemiesInStage.Add (this);
-		StartCoroutine ("FollowPlayer");
+		//StageData.currentInstance.enemiesInStage.Add (this);
+
+		List<Transform> newRoute = 
+			StageData.currentInstance.GetPathToTarget (transform, startPatrolPoint);
+		SetNewPath (newRoute);
+
+		//StartCoroutine ("FollowPlayer");
 	}
 	IEnumerator FollowPlayer()
 	{
@@ -127,10 +132,13 @@ public class EnemyMovement : MonoBehaviour {
 		VectorFordwardEnemy = new Vector2 (transform.forward.x, transform.forward.z);
 
 		if (Vector3.Distance (transform.position, Player.transform.position) < SafetyDistance &&
-			Vector2.Angle (VectorBetweenPlayerAndEnemy, VectorFordwardEnemy) < SafetyAngle) {
+			Vector2.Angle (VectorBetweenPlayerAndEnemy, VectorFordwardEnemy) < SafetyAngle)
+		{
 			Physics.Raycast (transform.position, (Player.transform.position - transform.position).normalized, out objectHitted/*, 15f, layerDefault*/);
 			return objectHitted.collider.gameObject.tag == "Player";
-		} else {
+		} 
+		else 
+		{
 			return false;
 		}
 	}
@@ -149,9 +157,8 @@ public class EnemyMovement : MonoBehaviour {
 				if (!playerCaptured) 
 				{
 					transform.Translate (Vector3.forward * MOVE_SPEED * moveMultiplier * Time.deltaTime);
-				}
-
-				if (Vector3.Distance (transform.position, Player.transform.position) < thresholdEnemyCapture) 
+				} 
+				else if (Vector3.Distance (transform.position, Player.transform.position) < thresholdEnemyCapture)
 				{
 					PlayerCatched ();
 					playerCaptured = true;
@@ -168,11 +175,13 @@ public class EnemyMovement : MonoBehaviour {
 				StageData.currentInstance.GetPathToTarget (transform, beforeAlert);
 			SetNewPath (newRoute);
 			SetState (EnemyState.Patrolling);
+
 		} 
 		else if (currentState == EnemyState.Patrolling && targetPathPositions.Count == 0) //Por si acaso, la verdad... 
 		{
 			//Si el enemigo esta mas cerca de un punto que de otro, irá hacia el otro.
-			if (Vector3.Distance (transform.position, startPatrolPoint) < Vector3.Distance (transform.position, endPatrolPoint)) {
+			if (Vector3.Distance (transform.position, startPatrolPoint.position) < 
+				Vector3.Distance (transform.position, endPatrolPoint.position)) {
 				List<Transform> newRoute = 
 					StageData.currentInstance.GetPathToTarget (transform, endPatrolPoint);
 				SetNewPath (newRoute);
