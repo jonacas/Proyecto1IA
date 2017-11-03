@@ -10,7 +10,12 @@ public class EnemyMovement : MonoBehaviour {
 	private const float PATH_REACH_PLAYER_THS = 1f;
 	private const float PATH_STUCK_TIMELIMIT = 5f;
 
-	private float moveMultiplier = 1;
+	private const float OUT_OF_COMBAT_VIEWDIST = 25;
+	private const float OUT_OF_COMBAT_FOV = 50;
+	private const float IN_COMBAT_FOV = 100;
+	private const float IN_COMBAT_VIEWDIST = 100;
+
+	private float moveSpeedMultiplier = 1;
 
 	private Vector3 previousValidUnstuckNode;
 
@@ -19,8 +24,10 @@ public class EnemyMovement : MonoBehaviour {
 	private Transform target_path_position;
 	private Quaternion target_rotation;
 
-	private GameObject Player; // the player gameobject
+	private GameObject playerReference; // the player gameobject
+
 	public float SafetyAngle = 50f, SafetyDistance = 15f; // no hay na mas que decir
+	public float followPlayerThs;
 
 	private RaycastHit objectHitted;
 	private Vector2 VectorBetweenPlayerAndEnemy, VectorFordwardEnemy;
@@ -31,13 +38,11 @@ public class EnemyMovement : MonoBehaviour {
 	public int enemyIDStagePart;
 
 	private EnemyState currentState;
-	private Transform beforeAlert;
+	private Vector3 beforeAlert;
+	private Vector3 lastKnownPlayerPosition;
 
-	public Transform startPatrolPoint;
-	public Transform endPatrolPoint;
-
-	public Transform[] patrolRoute; //Falta por implementar esto
-	private int currentPatrolPosition;
+	public Vector3 startPatrolPoint;
+	public Vector3 endPatrolPoint;
 
 	public bool playerCaptured = false;
 	public float thresholdEnemyCapture = 5f;
@@ -46,43 +51,144 @@ public class EnemyMovement : MonoBehaviour {
 	{
 		Patrolling,
 		Alert,
-		Informing,
+		ReturnToPreAlert,
 		InCombat
 	}
 
 	void Start()
 	{
-		currentState = EnemyState.Patrolling;
-		currentPatrolPosition = 0;
-		Player = StageData.currentInstance.GetPlayer ();
-		//StageData.currentInstance.enemiesInStage.Add (this);
+		beforeAlert = transform.position;
+		targetPathPositions = new List<Transform> ();
+		playerReference = StageData.currentInstance.GetPlayer ();
+		StageData.currentInstance.enemiesInStage.Add (this);
+		SetNewState (EnemyState.Patrolling);
 
-		List<Transform> newRoute = 
-			StageData.currentInstance.GetPathToTarget (transform, startPatrolPoint);
-		SetNewPath (newRoute);
-
-		//StartCoroutine ("FollowPlayer");
 	}
-	IEnumerator FollowPlayer()
+	public void SetNewState(EnemyState newstate)
+	{
+		if (playerCaptured)
+			return;
+		
+		StopAllCoroutines (); // <- IMPORTANTE
+		currentState = newstate;
+		targetPathPositions.Clear ();
+
+		switch (newstate) {
+		case EnemyState.InCombat:
+			{
+				print ("Setting new state to BehaviourInCombat");
+				SafetyAngle = IN_COMBAT_FOV;
+				SafetyDistance = IN_COMBAT_VIEWDIST;
+				moveSpeedMultiplier = 2f;
+				StartCoroutine ("BehaviourInCombat");
+				break;
+			}
+		case EnemyState.Alert:
+			{
+				print ("Setting new state to BehaviourAlert");
+				beforeAlert = transform.position;
+				StartCoroutine ("BehaviourAlert");
+				moveSpeedMultiplier = 1.8f;
+				SafetyAngle = IN_COMBAT_FOV;
+				SafetyDistance = IN_COMBAT_VIEWDIST;
+				break;
+			}
+		case EnemyState.ReturnToPreAlert:
+			{
+				print ("Setting new state to BehaviourPreAlert");
+				StartCoroutine ("BehaviourReturnToPreAlert");
+				moveSpeedMultiplier = 1.5f;
+				SafetyAngle = OUT_OF_COMBAT_FOV;
+				SafetyDistance = OUT_OF_COMBAT_VIEWDIST;
+
+				break;
+			}
+		case EnemyState.Patrolling:
+			{
+				print ("Setting new state to Patrolling");
+				StartCoroutine ("BehaviourPatrol");
+				moveSpeedMultiplier = 1f;
+				SafetyAngle = OUT_OF_COMBAT_FOV;
+				SafetyDistance = OUT_OF_COMBAT_VIEWDIST;
+				break;
+			}
+		}
+	}
+	IEnumerator BehaviourAlert()
+	{
+		if (lastKnownPlayerPosition != null)
+			SetNewPath (StageData.currentInstance.GetPathToTarget (transform.position, lastKnownPlayerPosition));
+		while (!IsCurrentPathFinished ()) {
+			if (IsPlayerInVisionRange ()) {
+				SetNewState (EnemyState.InCombat);
+				StageData.currentInstance.SendAlert (this, playerReference.transform.position);
+				print ("Player found, switching to InCombat");
+			}
+			yield return null;
+		}
+		print ("Nothing found on alerted position, switching to ReturnToPreAlert");
+		SetNewState (EnemyState.ReturnToPreAlert);
+	}
+	IEnumerator BehaviourReturnToPreAlert()
+	{
+		if (beforeAlert != null)
+			SetNewPath(StageData.currentInstance.GetPathToTarget(transform.position, beforeAlert));
+		while (!IsCurrentPathFinished ()) {
+			if (IsPlayerInVisionRange ()) {
+				SetNewState (EnemyState.InCombat);
+				StageData.currentInstance.SendAlert (this, playerReference.transform.position);
+				print ("Player found, switching to InCombat");
+			}
+			yield return null;
+		}
+		print ("Returned to PreAlert position, switching to Patrol");
+		SetNewState (EnemyState.Patrolling);
+	}
+	IEnumerator BehaviourPatrol()
 	{
 		while (true) {
-			SetNewPath(StageData.currentInstance.GetPathToTarget(transform, StageData.currentInstance.GetPlayer().transform));
+			if (IsPlayerInVisionRange ()) {
+				SetNewState (EnemyState.InCombat);
+				StageData.currentInstance.SendAlert (this, playerReference.transform.position);
+				print ("Player found, switching to InCombat");
+			}
+			// nada aun lol
+			yield return null;
+		}
+	}
+	IEnumerator BehaviourInCombat()
+	{
+		while (true) {
+			SetNewPath(StageData.currentInstance.GetPathToTarget(transform.position, StageData.currentInstance.GetPlayer().transform.position));
+			if (IsPlayerInVisionRange ()) {
+				if (Vector3.Distance (transform.position, playerReference.transform.position) < followPlayerThs) {
+					StopCoroutine ("FollowPlayer");
+					StartCoroutine ("FollowPlayer");
+					print ("Player is close, following directly");
+				} else {
+					StopCoroutine ("FollowPath");
+					StartCoroutine ("FollowPath");
+					print ("Following path to player");
+				}
+			} else {
+				print ("Lost Sight of player, switching to Alert");
+				lastKnownPlayerPosition = playerReference.transform.position;
+				SetNewState (EnemyState.Alert);
+			}
+
 			yield return new WaitForSeconds (0.5f);
 		}
 	}
 	void Update()
 	{
-		if (Vector3.Distance (transform.position, Player.transform.position) < thresholdEnemyCapture)
+		if (Vector3.Distance (transform.position, playerReference.transform.position) < thresholdEnemyCapture)
 		{
-			PlayerCatched ();
-			playerCaptured = true;
-			StopCoroutine ("FollowPath");
+			//PlayerCatched ();
 			//print ("Hemos parado corutina del enemigo");
 		}
 		else if (!playerCaptured && IsPlayerInVisionRange ()) 
 		{
 			enemyLight.color = Color.red;
-			StageData.currentInstance.SendAlert (this, Player.transform);
 			//print ("Iniciamos protocolo de aviso a enemigos");
 		} 
 		else 
@@ -90,43 +196,6 @@ public class EnemyMovement : MonoBehaviour {
 			enemyLight.color = Color.white;
 		}
 
-	}
-
-	public void SetState(EnemyState newstate)
-	{
-		switch (newstate)
-		{
-		case EnemyState.Patrolling:
-			{
-				currentState = EnemyState.Patrolling;
-				moveMultiplier = 1f;
-				break;
-			}
-		case EnemyState.Informing:
-			{
-				currentState = EnemyState.Informing;
-				moveMultiplier = 0.8f;
-				break;
-			}
-		case EnemyState.Alert:
-			{
-				//print ("Actualizamos estado a estado de Alerta");
-				if (currentState != EnemyState.Alert) 
-				{
-					beforeAlert = transform;
-					//print ("Añadimos posicion a la que volver despues");
-				}
-				currentState = EnemyState.Alert;
-				moveMultiplier = 1.5f;
-				break;
-			}
-		case EnemyState.InCombat:
-			{
-				currentState = EnemyState.InCombat;
-				moveMultiplier = 2f;
-				break;
-			}
-		}
 	}
 	public void SetNewPath(List<Transform> newPath)
 	{
@@ -141,14 +210,14 @@ public class EnemyMovement : MonoBehaviour {
 
 	public bool IsPlayerInVisionRange()
 	{
-		VectorBetweenPlayerAndEnemy = (new Vector2 (Player.transform.position.x, Player.transform.position.z) - new Vector2 (this.transform.position.x, this.transform.position.z)).normalized;
+		VectorBetweenPlayerAndEnemy = (new Vector2 (playerReference.transform.position.x, playerReference.transform.position.z) - new Vector2 (this.transform.position.x, this.transform.position.z)).normalized;
 		VectorFordwardEnemy = new Vector2 (transform.forward.x, transform.forward.z);
 
-		if (Vector3.Distance (transform.position, Player.transform.position) < SafetyDistance &&
+		if (Vector3.Distance (transform.position, playerReference.transform.position) < SafetyDistance &&
 			Vector2.Angle (VectorBetweenPlayerAndEnemy, VectorFordwardEnemy) < SafetyAngle)
 		{
 			//print ("Detectamos choque con algo");
-			Physics.Raycast (transform.position, (Player.transform.position - transform.position).normalized, out objectHitted/*, 15f, layerDefault*/);
+			Physics.Raycast (transform.position, (playerReference.transform.position - transform.position).normalized, out objectHitted/*, 15f, layerDefault*/);
 			return objectHitted.collider.gameObject.tag == "Player";
 		} 
 		else 
@@ -156,8 +225,27 @@ public class EnemyMovement : MonoBehaviour {
 			return false;
 		}
 	}
+	IEnumerator FollowPlayer()
+	{
+		StopCoroutine ("FollowPath");
+		Quaternion auxRotation;
+		previousValidUnstuckNode = transform.position;
+		while (targetPathPositions.Count > 0) {
+			while (true) {
+				auxRotation = transform.rotation; 
+				transform.LookAt (playerReference.transform); 
+				target_rotation = transform.rotation; 
+				transform.rotation = auxRotation;
+				transform.rotation = Quaternion.RotateTowards (transform.rotation, target_rotation, TURN_RATE * moveSpeedMultiplier * Time.deltaTime);
+
+				transform.Translate (Vector3.forward * MOVE_SPEED * moveSpeedMultiplier * Time.deltaTime); 
+				yield return null;
+			}
+		}
+	}
 	IEnumerator FollowPath()
 	{
+		StopCoroutine("FollowPlayer");
 		Quaternion auxRotation;
 		previousValidUnstuckNode = transform.position;
 		while (targetPathPositions.Count > 0) {
@@ -166,53 +254,35 @@ public class EnemyMovement : MonoBehaviour {
 				transform.LookAt (targetPathPositions [0]); 
 				target_rotation = transform.rotation; 
 				transform.rotation = auxRotation;
-				transform.rotation = Quaternion.RotateTowards (transform.rotation, target_rotation, TURN_RATE * moveMultiplier * Time.deltaTime);
+				transform.rotation = Quaternion.RotateTowards (transform.rotation, target_rotation, TURN_RATE * moveSpeedMultiplier * Time.deltaTime);
 
-				transform.Translate (Vector3.forward * MOVE_SPEED * moveMultiplier * Time.deltaTime); 
+				transform.Translate (Vector3.forward * MOVE_SPEED * moveSpeedMultiplier * Time.deltaTime); 
 				//print ("Nos movemos hacia objetivo");
 				yield return null;
 			}
 			targetPathPositions.RemoveAt (0);
 			previousValidUnstuckNode = transform.position;
 		}
-		//Hemos llegado al final del camino.... [COMPROBAR QUE NO LLEGA HASTA AQUI SIN TERMINAR EL CAMINO]
-		if (currentState == EnemyState.Alert) {
-			List<Transform> newRoute = 
-				StageData.currentInstance.GetPathToTarget (transform, beforeAlert);
-			SetNewPath (newRoute);
-			SetState (EnemyState.Patrolling);
-			//print ("volvemos a la patrulla");
-		} 
-		else if (currentState == EnemyState.Patrolling && targetPathPositions.Count == 0) //Por si acaso, la verdad... 
-		{
-			//Si el enemigo esta mas cerca de un punto que de otro, irá hacia el otro.
-			if (Vector3.Distance (transform.position, startPatrolPoint.position) < 
-				Vector3.Distance (transform.position, endPatrolPoint.position)) {
-				List<Transform> newRoute = 
-					StageData.currentInstance.GetPathToTarget (transform, endPatrolPoint);
-				SetNewPath (newRoute);
-				//print ("volvemos a anterior puesto de patrulla");
-			} 
-			else 
-			{
-				List<Transform> newRoute = 
-					StageData.currentInstance.GetPathToTarget (transform, startPatrolPoint);
-				SetNewPath (newRoute);
-				SetState (EnemyState.Patrolling);
-				//print ("volvemos a anterior puesto de patrulla");
-			}
-
+	}
+	public void SendAlertToPosition(Vector3 alertPosition)
+	{
+		lastKnownPlayerPosition = alertPosition;
+		if (currentState != EnemyState.InCombat) {
+			SetNewState (EnemyMovement.EnemyState.Alert);
+			print (gameObject.name + ": Alert recieved. checking alerted position.");
+		} else {
+			print (gameObject.name + ": Alert recieved. Ignored beacuse already in combat.");
 		}
-
-
 
 	}
 
 	public bool IsEnemyPatrolling() {return currentState == EnemyState.Patrolling;}
-
+	public bool IsCurrentPathFinished() { return targetPathPositions.Count == 0;
+	}
 	public void PlayerCatched()
 	{
-		
+		playerCaptured = true;
+		StopAllCoroutines ();
 	}
 
 

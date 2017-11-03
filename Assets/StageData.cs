@@ -11,6 +11,7 @@ public class StageData : MonoBehaviour {
 	public List<EnemyMovement> enemiesInStage2;
 	public List<EnemyMovement> enemiesInStage3;
 
+	private int obstacleLayerMask = 1 << 8;
 
 	public CreacionGrafo CG;
 
@@ -22,22 +23,51 @@ public class StageData : MonoBehaviour {
 	{
 		return player;
 	}
-	public List<Transform> GetPathToTarget(Transform requester, Transform target)
+	public List<Transform> GetPathToTarget(Vector3 requester, Vector3 target)
 	{
 		List<Transform> camino;
 
 		Node inicio, final;
 
-		int initX = (int) Mathf.Round(requester.transform.position.x / CG.incrementoX);
-		int initZ = (int) Mathf.Round(requester.transform.position.z / CG.incrementoZ);
-		int finalX = (int) Mathf.Round(target.transform.position.x / CG.incrementoX);
-		int finalZ = (int) Mathf.Round(target.transform.position.z / CG.incrementoZ);
+		int initX = (int) Mathf.Round(requester.x / CG.incrementoX);
+		int initZ = (int) Mathf.Round(requester.z / CG.incrementoZ);
+		int finalX = (int) Mathf.Round(target.x / CG.incrementoX);
+		int finalZ = (int) Mathf.Round(target.z / CG.incrementoZ);
 
 		if (initX < 0 || initX >= CG.filas || initZ < 0 || initZ >= CG.columnas || finalX < 0 || finalX >= CG.filas || finalZ < 0 || finalZ >= CG.columnas)
 			return null;
 
 		inicio = CG.nodeMap [initZ, initX].GetComponent<Node>();
-		final = CG.nodeMap [finalZ, finalX].GetComponent<Node>();
+		if (CG.nodeMap [finalZ, finalX] != null)
+			final = CG.nodeMap [finalZ, finalX].GetComponent<Node> ();
+		else
+			final = null;
+
+		if (final == null) {
+			Node closestNode = null;
+			for (int i = -1; i < 2; i++) {
+				for (int j = -1; j < 2; j++) {
+					if (CG.nodeMap [finalZ + i, finalX + j] != null)
+						final = CG.nodeMap [finalZ + i, finalX + j].GetComponent<Node> ();
+					else
+						final = null;
+					
+					if (final != null && !Physics.Raycast (CG.nodeMap [finalZ + i, finalX + j].transform.position, target, 
+						    Vector3.Distance (CG.nodeMap [finalZ + i, finalX + j].transform.position, target), obstacleLayerMask)) {
+						if (closestNode == null) {
+							closestNode = final;
+						} else if (Vector3.Distance (target, final.transform.position) < Vector3.Distance (target, closestNode.transform.position)) {
+							closestNode = final;
+						}
+
+					} else {
+						print (final == null);
+					}
+				}
+			}
+			final = closestNode;
+		}
+
 		print (inicio.gameObject.name);
 		print (final.gameObject.name);
 
@@ -53,122 +83,14 @@ public class StageData : MonoBehaviour {
 		return camino;
 	}
 
-	public void SendAlert(EnemyMovement self, Transform detectedPos)
+	public void SendAlert(EnemyMovement self, Vector3 detectedPos)
 	{
-		if (self.enemyIDStage == 1 && self.enemyIDStagePart == 1) 
-		{
-			enemiesInStage[0].SetState (EnemyMovement.EnemyState.Alert);
-			List<Transform> newRoute = GetPathToTarget (enemiesInStage[0].transform, detectedPos);
-			enemiesInStage[0].SetNewPath (newRoute);
-			print ("entered in alert state");
-		}
-		switch (self.enemyIDStage)
-		{
-			case 1: // En este caso, va directamente a por el jugador: activara el dialogo de alerta,
-			{		// Pero como no hay nadie mas, pues le perseguira.
-				enemiesInStage[0].SetState (EnemyMovement.EnemyState.Alert);
-				List<Transform> newRoute = GetPathToTarget (enemiesInStage[0].transform, detectedPos);
-				enemiesInStage[0].SetNewPath (newRoute);
-				print ("entered in alert state");
-				break;
-			}
-			case 2: //Tiene tres zonas
-			{
-				switch (self.enemyIDStagePart) 
-				{
-					case 1:
-					{	
-						for (int i = 0; i < enemiesInStage2.Count; i++) 
-						{
-							if (enemiesInStage2 [i].enemyIDStagePart == 1) 
-							{
-								enemiesInStage2[i].SetState (EnemyMovement.EnemyState.Alert);
-								List<Transform> newRoute = GetPathToTarget (enemiesInStage2[i].transform, detectedPos);
-								enemiesInStage2[i].SetNewPath (newRoute);
-							}
-						}
-						break;
-					}
-					case 2: 
-					{
-						for (int i = 0; i < enemiesInStage2.Count; i++) 
-						{
-							enemiesInStage2[i].SetState (EnemyMovement.EnemyState.Alert);
-							List<Transform> newRoute = GetPathToTarget (enemiesInStage2[i].transform, detectedPos);
-							enemiesInStage2[i].SetNewPath (newRoute);
-						}
-						break;
-					}
-					case 3:
-					{
-						for (int i = 0; i < enemiesInStage2.Count; i++) 
-						{
-							enemiesInStage2[i].SetState (EnemyMovement.EnemyState.Alert);
-							List<Transform> newRoute = GetPathToTarget (enemiesInStage2[i].transform, detectedPos);
-							enemiesInStage2[i].SetNewPath (newRoute);
-						}
-						break;
-					}
-
-				}
-				break;
-			}
-			case 3: // Tiene cuatro zonas
-			{
-				switch (self.enemyIDStagePart) 
-				{
-				case 1:
-					{	
-						for (int i = 0; i < enemiesInStage3.Count; i++) 
-						{
-							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
-							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
-							enemiesInStage3[i].SetNewPath (newRoute);
-						}
-						break;
-					}
-				case 2: 
-					{
-						for (int i = 0; i < enemiesInStage3.Count; i++) 
-						{
-							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
-							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
-							enemiesInStage3[i].SetNewPath (newRoute);
-						}
-						break;
-					}
-				case 3:
-					{
-						for (int i = 0; i < enemiesInStage3.Count; i++) 
-						{
-							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
-							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
-							enemiesInStage3[i].SetNewPath (newRoute);
-						}
-						break;
-					}
-				case 4:
-					{
-						for (int i = 0; i < enemiesInStage3.Count; i++) 
-						{
-							enemiesInStage3[i].SetState (EnemyMovement.EnemyState.Alert);
-							List<Transform> newRoute = GetPathToTarget (enemiesInStage3[i].transform, detectedPos);
-							enemiesInStage3[i].SetNewPath (newRoute);
-						}
-						break;
-					}
-				}
-				break;
-
+		// y todas estas 100 lineas de codigo no se pueden resumir en 5? tienes un switch dentro de un switch, por que no hacer algo rolo
+		// if self.idpart == enemiesInstage[i].idpart && self. idstage == enemiesInstage[i].idstage
+		for (int i = 0; i < enemiesInStage.Count; i++) {
+			if (enemiesInStage [i].enemyIDStage == self.enemyIDStage && enemiesInStage [i].enemyIDStagePart == self.enemyIDStagePart) {
+				enemiesInStage [i].SendAlertToPosition (detectedPos);
 			}
 		}
-
-
 	}
-
-
-
-
-
-		
 }

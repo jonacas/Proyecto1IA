@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
 
-	public GameObject camera;
+	public GameObject cam;
     public Material diamante;
     private float moveX;
     private float moveY;
@@ -13,14 +13,13 @@ public class PlayerMovement : MonoBehaviour {
     public GameObject child;
     private const float RotationSpeed = 450f;
 	public float moveSpeed = 10;
-	private Rigidbody RB;
+	public Rigidbody RB;
     public GameCamera cameraScript;
     private float offset;
     private float offsetAux;
 
     // Use this for initialization
     void Start () {
-		RB = GetComponent<Rigidbody> ();
         diamante.renderQueue = 3800;
     }
 	
@@ -45,7 +44,7 @@ public class PlayerMovement : MonoBehaviour {
     void MovePlayer()
     {
         Vector3 currentTranslation = new Vector3(moveX, 0, moveY) * Time.fixedDeltaTime * moveSpeed;
-        Quaternion camAdjustedRotation = Quaternion.Euler(0, camera.transform.rotation.eulerAngles.y, 0);
+        Quaternion camAdjustedRotation = Quaternion.Euler(0, cam.transform.rotation.eulerAngles.y, 0);
         currentTranslation = camAdjustedRotation * currentTranslation;
 		transform.Translate(currentTranslation);
 		child.transform.rotation = Quaternion.RotateTowards(child.transform.rotation,targetRotation,RotationSpeed * Time.fixedDeltaTime);
@@ -64,7 +63,7 @@ public class PlayerMovement : MonoBehaviour {
 		moveX = Input.GetAxisRaw ("Horizontal");
 		moveY = Input.GetAxisRaw("Vertical");
 
-		Quaternion cameraRotation = new Quaternion (0f,camera.transform.rotation.y, 0f, camera.transform.rotation.w);
+		Quaternion cameraRotation = new Quaternion (0f,cam.transform.rotation.y, 0f, cam.transform.rotation.w);
 
         if (moveX > 0) //Se Mueve en X+
         {
