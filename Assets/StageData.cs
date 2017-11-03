@@ -8,8 +8,6 @@ public class StageData : MonoBehaviour {
 	public static StageData currentInstance;
 
 	public List<EnemyMovement> enemiesInStage;
-	public List<EnemyMovement> enemiesInStage2;
-	public List<EnemyMovement> enemiesInStage3;
 
 	private int obstacleLayerMask = 1 << 8;
 
@@ -37,14 +35,43 @@ public class StageData : MonoBehaviour {
 		if (initX < 0 || initX >= CG.filas || initZ < 0 || initZ >= CG.columnas || finalX < 0 || finalX >= CG.filas || finalZ < 0 || finalZ >= CG.columnas)
 			return null;
 
-		inicio = CG.nodeMap [initZ, initX].GetComponent<Node>();
+		Node closestNode = null;
+
+		if (CG.nodeMap [initZ, initX] != null)
+			inicio = CG.nodeMap [initZ, initX].GetComponent<Node> ();
+		else
+			inicio = null;
+
+		if (inicio == null) {
+			closestNode = null;
+			for (int i = -1; i < 2; i++) {
+				for (int j = -1; j < 2; j++) {
+					if (CG.nodeMap [initZ + i, initX + j] != null)
+						inicio = CG.nodeMap [initZ + i, initX + j].GetComponent<Node> ();
+					else
+						inicio = null;
+
+					if (inicio != null && !Physics.Raycast (CG.nodeMap [initZ + i, initX + j].transform.position, target, 
+						Vector3.Distance (CG.nodeMap [initZ + i, initX + j].transform.position, target), obstacleLayerMask)) {
+						if (closestNode == null) {
+							closestNode = inicio;
+						} else if (Vector3.Distance (target, inicio.transform.position) < Vector3.Distance (target, closestNode.transform.position)) {
+							closestNode = inicio;
+						}
+
+					}
+				}
+			}
+			inicio = closestNode;
+		}
+
 		if (CG.nodeMap [finalZ, finalX] != null)
 			final = CG.nodeMap [finalZ, finalX].GetComponent<Node> ();
 		else
 			final = null;
 
 		if (final == null) {
-			Node closestNode = null;
+			closestNode = null;
 			for (int i = -1; i < 2; i++) {
 				for (int j = -1; j < 2; j++) {
 					if (CG.nodeMap [finalZ + i, finalX + j] != null)
@@ -60,19 +87,13 @@ public class StageData : MonoBehaviour {
 							closestNode = final;
 						}
 
-					} else {
-						print (final == null);
 					}
 				}
 			}
 			final = closestNode;
 		}
 
-		print (inicio.gameObject.name);
-		print (final.gameObject.name);
-
 		camino = AEstrella.FindPath(final, inicio, CG.filas * CG.columnas * 5, false, true);
-		StageData.currentInstance.enemiesInStage [0].SetNewPath (camino);
 
 		foreach (GameObject n in CG.nodeMap)
 		{
@@ -83,12 +104,10 @@ public class StageData : MonoBehaviour {
 		return camino;
 	}
 
-	public void SendAlert(EnemyMovement self, Vector3 detectedPos)
+	public void SendAlert(Vector3 detectedPos, int area, int stage)
 	{
-		// y todas estas 100 lineas de codigo no se pueden resumir en 5? tienes un switch dentro de un switch, por que no hacer algo rolo
-		// if self.idpart == enemiesInstage[i].idpart && self. idstage == enemiesInstage[i].idstage
 		for (int i = 0; i < enemiesInStage.Count; i++) {
-			if (enemiesInStage [i].enemyIDStage == self.enemyIDStage && enemiesInStage [i].enemyIDStagePart == self.enemyIDStagePart) {
+			if (enemiesInStage [i].enemyIDStage == stage && enemiesInStage [i].enemyIDStagePart == area) {
 				enemiesInStage [i].SendAlertToPosition (detectedPos);
 			}
 		}

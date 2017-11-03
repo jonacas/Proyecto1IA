@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour {
 
-	private const float MOVE_SPEED = 5f;
+	private const float MOVE_SPEED = 11.4728f;
 	private const float TURN_RATE = 360f;
 	public float PATH_REACH_NODE_THS = 3f;
 	private const float PATH_REACH_PLAYER_THS = 1f;
@@ -41,8 +41,6 @@ public class EnemyMovement : MonoBehaviour {
 	private Vector3 beforeAlert;
 	private Vector3 lastKnownPlayerPosition;
 
-	public Vector3 startPatrolPoint;
-	public Vector3 endPatrolPoint;
 
 	public bool playerCaptured = false;
 	public float thresholdEnemyCapture = 5f;
@@ -121,7 +119,7 @@ public class EnemyMovement : MonoBehaviour {
 		while (!IsCurrentPathFinished ()) {
 			if (IsPlayerInVisionRange ()) {
 				SetNewState (EnemyState.InCombat);
-				StageData.currentInstance.SendAlert (this, playerReference.transform.position);
+				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
 				print ("Player found, switching to InCombat");
 			}
 			yield return null;
@@ -136,7 +134,7 @@ public class EnemyMovement : MonoBehaviour {
 		while (!IsCurrentPathFinished ()) {
 			if (IsPlayerInVisionRange ()) {
 				SetNewState (EnemyState.InCombat);
-				StageData.currentInstance.SendAlert (this, playerReference.transform.position);
+				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
 				print ("Player found, switching to InCombat");
 			}
 			yield return null;
@@ -149,7 +147,7 @@ public class EnemyMovement : MonoBehaviour {
 		while (true) {
 			if (IsPlayerInVisionRange ()) {
 				SetNewState (EnemyState.InCombat);
-				StageData.currentInstance.SendAlert (this, playerReference.transform.position);
+				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
 				print ("Player found, switching to InCombat");
 			}
 			// nada aun lol
@@ -176,7 +174,7 @@ public class EnemyMovement : MonoBehaviour {
 				SetNewState (EnemyState.Alert);
 			}
 
-			yield return new WaitForSeconds (0.5f);
+			yield return null;
 		}
 	}
 	void Update()
