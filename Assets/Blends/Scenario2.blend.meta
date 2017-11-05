@@ -14,6 +14,32 @@ ModelImporter:
     100012: SueloYMurosExteriores
     100014: EscenarioCristales
     100016: EscenarioMuros
+    100018: Agua
+    100020: Cristal1
+    100022: Cristal2
+    100024: Cristal3
+    100026: Cristal5
+    100028: Cristal6
+    100030: Cristal7
+    100032: Cristal8
+    100034: Exterior1
+    100036: Exterior2
+    100038: Exterior3
+    100040: Exterior4
+    100042: Muro1
+    100044: Muro11
+    100046: Muro12
+    100048: Muro13
+    100050: Muro2
+    100052: Muro3
+    100054: Muro4
+    100056: Muro5
+    100058: Muro6
+    100060: Muro7
+    100062: Muro8
+    100064: Muro9
+    100066: Puente
+    100068: Suelo
     400000: Cube
     400002: ParedesNivel
     400004: ParedesNivelCristal
@@ -23,6 +49,32 @@ ModelImporter:
     400012: SueloYMurosExteriores
     400014: EscenarioCristales
     400016: EscenarioMuros
+    400018: Agua
+    400020: Cristal1
+    400022: Cristal2
+    400024: Cristal3
+    400026: Cristal5
+    400028: Cristal6
+    400030: Cristal7
+    400032: Cristal8
+    400034: Exterior1
+    400036: Exterior2
+    400038: Exterior3
+    400040: Exterior4
+    400042: Muro1
+    400044: Muro11
+    400046: Muro12
+    400048: Muro13
+    400050: Muro2
+    400052: Muro3
+    400054: Muro4
+    400056: Muro5
+    400058: Muro6
+    400060: Muro7
+    400062: Muro8
+    400064: Muro9
+    400066: Puente
+    400068: Suelo
     2300000: Cube
     2300002: ParedesNivel
     2300004: ParedesNivelCristal
@@ -31,6 +83,32 @@ ModelImporter:
     2300010: SueloYMurosExteriores
     2300012: EscenarioCristales
     2300014: EscenarioMuros
+    2300016: Agua
+    2300018: Cristal1
+    2300020: Cristal2
+    2300022: Cristal3
+    2300024: Cristal5
+    2300026: Cristal6
+    2300028: Cristal7
+    2300030: Cristal8
+    2300032: Exterior1
+    2300034: Exterior2
+    2300036: Exterior3
+    2300038: Exterior4
+    2300040: Muro1
+    2300042: Muro11
+    2300044: Muro12
+    2300046: Muro13
+    2300048: Muro2
+    2300050: Muro3
+    2300052: Muro4
+    2300054: Muro5
+    2300056: Muro6
+    2300058: Muro7
+    2300060: Muro8
+    2300062: Muro9
+    2300064: Puente
+    2300066: Suelo
     3300000: Cube
     3300002: ParedesNivel
     3300004: ParedesNivelCristal
@@ -39,6 +117,32 @@ ModelImporter:
     3300010: SueloYMurosExteriores
     3300012: EscenarioCristales
     3300014: EscenarioMuros
+    3300016: Agua
+    3300018: Cristal1
+    3300020: Cristal2
+    3300022: Cristal3
+    3300024: Cristal5
+    3300026: Cristal6
+    3300028: Cristal7
+    3300030: Cristal8
+    3300032: Exterior1
+    3300034: Exterior2
+    3300036: Exterior3
+    3300038: Exterior4
+    3300040: Muro1
+    3300042: Muro11
+    3300044: Muro12
+    3300046: Muro13
+    3300048: Muro2
+    3300050: Muro3
+    3300052: Muro4
+    3300054: Muro5
+    3300056: Muro6
+    3300058: Muro7
+    3300060: Muro8
+    3300062: Muro9
+    3300064: Puente
+    3300066: Suelo
     4300000: Cube
     4300002: ParedesNivelCristal
     4300004: ParedInicialCristal
@@ -47,6 +151,32 @@ ModelImporter:
     4300010: SueloYMurosExteriores
     4300012: EscenarioCristales
     4300014: EscenarioMuros
+    4300016: Puente
+    4300018: Agua
+    4300020: Cristal7
+    4300022: Cristal6
+    4300024: Cristal5
+    4300026: Cristal3
+    4300028: Cristal2
+    4300030: Cristal1
+    4300032: Muro13
+    4300034: Muro12
+    4300036: Muro11
+    4300038: Muro9
+    4300040: Muro8
+    4300042: Muro7
+    4300044: Exterior4
+    4300046: Muro6
+    4300048: Exterior3
+    4300050: Exterior2
+    4300052: Muro5
+    4300054: Exterior1
+    4300056: Muro4
+    4300058: Muro3
+    4300060: Muro2
+    4300062: Muro1
+    4300064: Cristal8
+    4300066: Suelo
     7400000: Default Take
     9500000: //RootNode
   materials:

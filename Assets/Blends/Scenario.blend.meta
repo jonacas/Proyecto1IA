@@ -11,32 +11,158 @@ ModelImporter:
     100006: SueloYMurosExteriores
     100008: ParedesNivelCristal
     100010: ParedInicialCristal
+    100012: MuroExterior1
+    100014: MuroExterior2
+    100016: MuroExterior3
+    100018: MuroExterior4
+    100020: MuroExterior5
+    100022: MuroExterior6
+    100024: MuroExterior7
+    100026: MuroExterior8
+    100028: Suelo
+    100030: AdornoCentral
+    100032: ParedNormalBase
+    100034: ParedNormalBase_001
+    100036: ParedNv1_1
+    100038: ParedNv1_1_001
+    100040: ParedNv1_2
+    100042: ParedNv1_2_001
+    100044: ParedNv1_3
+    100046: ParedNv1_3_001
+    100048: ParedNv1_3_002
+    100050: ParedNv1_3_003
+    100052: MuroExterior4_001
     400000: ParedesNivel
     400002: ParedInicial
     400004: //RootNode
     400006: SueloYMurosExteriores
     400008: ParedesNivelCristal
     400010: ParedInicialCristal
+    400012: MuroExterior1
+    400014: MuroExterior2
+    400016: MuroExterior3
+    400018: MuroExterior4
+    400020: MuroExterior5
+    400022: MuroExterior6
+    400024: MuroExterior7
+    400026: MuroExterior8
+    400028: Suelo
+    400030: AdornoCentral
+    400032: ParedNormalBase
+    400034: ParedNormalBase_001
+    400036: ParedNv1_1
+    400038: ParedNv1_1_001
+    400040: ParedNv1_2
+    400042: ParedNv1_2_001
+    400044: ParedNv1_3
+    400046: ParedNv1_3_001
+    400048: ParedNv1_3_002
+    400050: ParedNv1_3_003
+    400052: MuroExterior4_001
     2300000: ParedesNivel
     2300002: ParedInicial
     2300004: SueloYMurosExteriores
     2300006: ParedesNivelCristal
     2300008: ParedInicialCristal
+    2300010: MuroExterior1
+    2300012: MuroExterior2
+    2300014: MuroExterior3
+    2300016: MuroExterior4
+    2300018: MuroExterior5
+    2300020: MuroExterior6
+    2300022: MuroExterior7
+    2300024: MuroExterior8
+    2300026: Suelo
+    2300028: AdornoCentral
+    2300030: ParedNormalBase
+    2300032: ParedNormalBase_001
+    2300034: ParedNv1_1
+    2300036: ParedNv1_1_001
+    2300038: ParedNv1_2
+    2300040: ParedNv1_2_001
+    2300042: ParedNv1_3
+    2300044: ParedNv1_3_001
+    2300046: ParedNv1_3_002
+    2300048: ParedNv1_3_003
+    2300050: MuroExterior4_001
     3300000: ParedesNivel
     3300002: ParedInicial
     3300004: SueloYMurosExteriores
     3300006: ParedesNivelCristal
     3300008: ParedInicialCristal
+    3300010: MuroExterior1
+    3300012: MuroExterior2
+    3300014: MuroExterior3
+    3300016: MuroExterior4
+    3300018: MuroExterior5
+    3300020: MuroExterior6
+    3300022: MuroExterior7
+    3300024: MuroExterior8
+    3300026: Suelo
+    3300028: AdornoCentral
+    3300030: ParedNormalBase
+    3300032: ParedNormalBase_001
+    3300034: ParedNv1_1
+    3300036: ParedNv1_1_001
+    3300038: ParedNv1_2
+    3300040: ParedNv1_2_001
+    3300042: ParedNv1_3
+    3300044: ParedNv1_3_001
+    3300046: ParedNv1_3_002
+    3300048: ParedNv1_3_003
+    3300050: MuroExterior4_001
     4300000: ParedesNivel
     4300002: ParedInicial
     4300004: SueloYMurosExteriores
     4300006: ParedesNivelCristal
     4300008: ParedInicialCristal
+    4300010: MuroExterior8
+    4300012: MuroExterior7
+    4300014: MuroExterior6
+    4300016: MuroExterior5
+    4300018: MuroExterior4
+    4300020: MuroExterior3
+    4300022: MuroExterior2
+    4300024: MuroExterior1
+    4300026: Suelo
+    4300028: ParedNv1_3_003
+    4300030: ParedNv1_3_002
+    4300032: AdornoCentral
+    4300034: ParedNormalBase_001
+    4300036: ParedNv1_1_001
+    4300038: ParedNv1_2_001
+    4300040: ParedNv1_3_001
+    4300042: ParedNv1_3
+    4300044: ParedNv1_2
+    4300046: ParedNv1_1
+    4300048: ParedNormalBase
+    4300050: MuroExterior4_001
     6400000: ParedesNivel
     6400002: ParedInicial
     6400004: SueloYMurosExteriores
     6400006: ParedesNivelCristal
     6400008: ParedInicialCristal
+    6400010: MuroExterior1
+    6400012: MuroExterior2
+    6400014: MuroExterior3
+    6400016: MuroExterior4
+    6400018: MuroExterior5
+    6400020: MuroExterior6
+    6400022: MuroExterior7
+    6400024: MuroExterior8
+    6400026: Suelo
+    6400028: AdornoCentral
+    6400030: ParedNormalBase
+    6400032: ParedNormalBase_001
+    6400034: ParedNv1_1
+    6400036: ParedNv1_1_001
+    6400038: ParedNv1_2
+    6400040: ParedNv1_2_001
+    6400042: ParedNv1_3
+    6400044: ParedNv1_3_001
+    6400046: ParedNv1_3_002
+    6400048: ParedNv1_3_003
+    6400050: MuroExterior4_001
     7400000: Default Take
     9500000: //RootNode
   materials:
