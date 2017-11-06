@@ -15,6 +15,9 @@ public class EnemyMovement : MonoBehaviour {
 	private const float IN_COMBAT_FOV = 100;
 	private const float IN_COMBAT_VIEWDIST = 100;
 
+	private const float WAIT_TIME_AFTER_PATROL_NODE_REACHED = 1f;
+	private const float WAIT_TIME_AFTER_PATROL_FINISHED = 0.25f;
+
 	private float moveSpeedMultiplier = 1;
 	private List<Transform> targetPathPositions;
 	private Transform target_player_position;
@@ -27,8 +30,6 @@ public class EnemyMovement : MonoBehaviour {
 	private Vector3 beforeAlert;
 	private Vector3 lastKnownPlayerPosition;
     private Vector3 previousValidUnstuckNode;
-    private List<Transform>[] patrolRoutes;
-
 
     public bool playerCaptured = false;
     public float thresholdEnemyCapture = 5f;
@@ -37,8 +38,8 @@ public class EnemyMovement : MonoBehaviour {
     public int enemyIDStagePart;
     public float SafetyAngle = 50f, SafetyDistance = 15f; // no hay na mas que decir
     public float followPlayerThs;
-    public Vector3[] patrolPoints; //array de vectores que indican los puntos por los que pasara el enemigo en orden
-    public bool ciclicalPatrol; //true = del ultimo punto de ruta se volvera al priemro //// false = desde el ultimo punto el camino se realizara en orden inverso
+
+	public List<Transform> patrolPositions;
 
 	public enum EnemyState
 	{
@@ -47,61 +48,12 @@ public class EnemyMovement : MonoBehaviour {
 		ReturnToPreAlert,
 		InCombat
 	}
-
-
-    void Awake()
-    {
-       
-
-    }
-
     void Start()
 	{
 		beforeAlert = transform.position;
 		targetPathPositions = new List<Transform> ();
 		playerReference = StageData.currentInstance.GetPlayer ();
 		StageData.currentInstance.enemiesInStage.Add (this);
-        
-
-        print(StageData.currentInstance);
-        if (ciclicalPatrol)
-        {
-            //inicializamos el array para que contenga todas las patrullas
-            //[0] sera la que lleva de la posicion actual al primer nodo de la patrulla
-            //[.length-1] sera la ruta que una el primer y el ultimo punto
-            patrolRoutes = new List<Transform>[patrolPoints.Length + 1];
-            patrolRoutes[0] = StageData.currentInstance.GetPathToTarget(this.transform.position, patrolPoints[0]);
-
-            for (int i = 1; i <= patrolPoints.Length; i++)
-            {
-                if (i != patrolPoints.Length)
-                    patrolRoutes[i] = StageData.currentInstance.GetPathToTarget(patrolPoints[i - 1], patrolPoints[i]);
-                else
-                    patrolRoutes[i] = StageData.currentInstance.GetPathToTarget(patrolPoints[i - 1], patrolPoints[0]);
-            }
-        }
-
-        if (!ciclicalPatrol)
-        {
-            //si no es cilica, el array se inicializa para obtener las rutas normales y las inversas
-            patrolRoutes = new List<Transform>[patrolPoints.Length + patrolPoints.Length - 2];
-            //[0] sera la que lleva de la posicion actual al primer nodo de la patrulla
-            patrolRoutes[0] = StageData.currentInstance.GetPathToTarget(this.transform.position, patrolPoints[0]);
-
-            int contador = 0;
-            //rutas normales
-            for (int i = 1; i < patrolPoints.Length; i++)
-            {
-                contador = i;
-                patrolRoutes[i] = StageData.currentInstance.GetPathToTarget(patrolPoints[i - 1], patrolPoints[i]);
-            }
-
-            for (int i = patrolPoints.Length - 1; i > 0; i--)
-            {
-                patrolRoutes[contador++] = StageData.currentInstance.GetPathToTarget(patrolPoints[i], patrolPoints[i - 1]);
-            }
-        }
-
         SetNewState(EnemyState.Patrolling);
 
 	}
@@ -187,32 +139,16 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	IEnumerator BehaviourPatrol()
 	{
-        int counter = 0;
-        List<Transform> aux;
-        //camino desde posicion inicial a inicio de patrulla
-        //patrolRoutes[0] = StageData.currentInstance.GetPathToTarget(this.transform.position, patrolPoints[0]);
-        SetNewPath(patrolRoutes[0]);
-
-		while (true) {
-			if (IsPlayerInVisionRange ()) {
-				SetNewState (EnemyState.InCombat);
-				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
-				print ("Player found, switching to InCombat");
+		for (int i = 0; i < patrolPositions.Count; i++) {
+			SetNewPath (StageData.currentInstance.GetPathToTarget(transform.position, patrolPositions[i].transform.position));
+			while (!IsCurrentPathFinished()) {
+				yield return null;
 			}
-
-            //si ya ha recorrido el camino
-            if (targetPathPositions.Count <= 0)
-            {
-                if (++counter >= patrolRoutes.Length)
-                {
-                    counter = 1;
-                }
-                aux = new List<Transform>(patrolRoutes[counter]);
-                SetNewPath(aux);
-            }
-            //seguimiento de rutas de patrulla
-			yield return null;
+			yield return new WaitForSeconds (WAIT_TIME_AFTER_PATROL_NODE_REACHED);
 		}
+		yield return new WaitForSeconds (WAIT_TIME_AFTER_PATROL_FINISHED);
+		StartCoroutine ("BehaviourPatrol");
+
 	}
 	IEnumerator BehaviourInCombat()
 	{
@@ -257,7 +193,6 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	public void SetNewPath(List<Transform> newPath)
 	{
-        print("hola");
 		//print ("Iniciamos el desarrollo de caminos para el jugador");
 		if (newPath == null)
 			return;
