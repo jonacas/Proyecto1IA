@@ -72,7 +72,7 @@ public class EnemyMovement : MonoBehaviour {
 				print ("Setting new state to BehaviourInCombat");
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
-				moveSpeedMultiplier = 2f;
+				moveSpeedMultiplier = 0.9f;
 				StartCoroutine ("BehaviourInCombat");
 				break;
 			}
@@ -81,7 +81,7 @@ public class EnemyMovement : MonoBehaviour {
 				print ("Setting new state to BehaviourAlert");
 				beforeAlert = transform.position;
 				StartCoroutine ("BehaviourAlert");
-				moveSpeedMultiplier = 1.8f;
+				moveSpeedMultiplier = 0.6f;
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
 				break;
@@ -90,7 +90,7 @@ public class EnemyMovement : MonoBehaviour {
 			{
 				print ("Setting new state to BehaviourPreAlert");
 				StartCoroutine ("BehaviourReturnToPreAlert");
-				moveSpeedMultiplier = 1.5f;
+				moveSpeedMultiplier = 0.5f;
 				SafetyAngle = OUT_OF_COMBAT_FOV;
 				SafetyDistance = OUT_OF_COMBAT_VIEWDIST;
 
@@ -100,7 +100,7 @@ public class EnemyMovement : MonoBehaviour {
 			{
 				print ("Setting new state to Patrolling");
 				StartCoroutine ("BehaviourPatrol");
-				moveSpeedMultiplier = 1f;
+				moveSpeedMultiplier = 0.3f;
 				SafetyAngle = OUT_OF_COMBAT_FOV;
 				SafetyDistance = OUT_OF_COMBAT_VIEWDIST;
 				break;
@@ -183,6 +183,7 @@ public class EnemyMovement : MonoBehaviour {
 		else if (!playerCaptured && IsPlayerInVisionRange ()) 
 		{
 			enemyLight.color = Color.red;
+			SetNewState (EnemyState.InCombat);
 			//print ("Iniciamos protocolo de aviso a enemigos");
 		} 
 		else 
