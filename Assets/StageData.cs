@@ -93,7 +93,7 @@ public class StageData : MonoBehaviour {
 			final = closestNode;
 		}
 
-		camino = AEstrella.FindPath(final, inicio, CG.filas * CG.columnas * 5, false, true);
+		camino = AEstrella.FindPath(final, inicio, CG.filas * CG.columnas, false, true);
 
 		foreach (GameObject n in CG.nodeMap)
 		{
@@ -106,6 +106,7 @@ public class StageData : MonoBehaviour {
 
 	public void SendAlert(Vector3 detectedPos, int area, int stage)
 	{
+        print("Sending alert...");
 		for (int i = 0; i < enemiesInStage.Count; i++) {
 			if (enemiesInStage [i].enemyIDStage == stage && enemiesInStage [i].enemyIDStagePart == area) {
 				enemiesInStage [i].SendAlertToPosition (detectedPos);
