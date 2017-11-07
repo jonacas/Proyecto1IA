@@ -29,7 +29,7 @@ namespace Priority_Queue
         public PriorityQueue(int maxNodos)
         {
 #if DEBUG
-            if(maxNodos <= 0)
+            if (maxNodos <= 0)
                 throw new InvalidOperationException("El tamano de la cola de prioridad debe ser mayor que 0");
 #endif
             _numNodos = 0;
@@ -48,13 +48,20 @@ namespace Priority_Queue
         }
 
 
+        public int NumElementos()
+        {
+            return _numNodos;
+        }
+
+
 
         /// <summary>
         /// Vacia la cola de prioridad SIN eliminar los datos
         /// La cola se comportara como una nueva
         /// O(1)
         /// </summary>
-        public void Vaciar(){
+        public void Vaciar()
+        {
             _numNodos = 0;
         }
 
@@ -77,11 +84,11 @@ namespace Priority_Queue
         public bool Contiene(Node nodo)
         {
 #if DEBUG
-            if(nodo == null)
+            if (nodo == null)
                 throw new ArgumentNullException("El nodo proporcionado al metodo Contiene() de la clase PriorityQueue es nulo");
             //Esta excepcion debe desactivarse si en vez de usar Vaciar() se usa Reset()
-           /* if(nodo.indiceCola < 0 || nodo.indiceCola > _nodos.Length)
-                throw new InvalidOperationException("El nodo proporcionado al metodo esta corrupto. ¿Ha sido modificado externamente?");*/
+            /* if(nodo.indiceCola < 0 || nodo.indiceCola > _nodos.Length)
+                 throw new InvalidOperationException("El nodo proporcionado al metodo esta corrupto. ¿Ha sido modificado externamente?");*/
 #endif
             return _nodos[nodo.indiceCola] == nodo;
         }
@@ -96,12 +103,12 @@ namespace Priority_Queue
         public void Encolar(Node nodo, float prioridad)
         {
 #if DEBUG
-            if(nodo == null)
+            if (nodo == null)
             {
                 throw new ArgumentNullException("El nodo proporcionado a Encolar() es nulo");
             }
 
-            if(_numNodos >= _nodos.Length-1)
+            if (_numNodos >= _nodos.Length - 1)
                 throw new InvalidOperationException("La cola estaba llena y se ha intentado encolar otro nodo:" + nodo);
             //Esta excepcion debe desactivarse si en vez de usar Vaciar() se usa Reset()
             /*if(Contiene(nodo))
@@ -126,18 +133,41 @@ namespace Priority_Queue
             if (nodo.indiceCola > 1)
             {
                 padre = nodo.indiceCola / 2;
+                Node nodoPadre = _nodos[padre];
+                if (tienePirioridadMayorOIgual(nodoPadre, nodo))
+                {
+                    //se cambia la posicion del padre
+                    _nodos[nodo.indiceCola] =nodoPadre;
+                    //cambiamos posicion del padre
+                    nodoPadre.indiceCola = nodo.indiceCola;
+                    //actualizamos indice del nodo
+                    nodo.indiceCola = padre;
+
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
                 while (padre > 1) //mientras pueda seguir subiendo
                 {
-                    if (tienePirioridadMayorOIgual(_nodos[padre], nodo))
+                    //scamos a su nuevo padre
+                    padre = nodo.indiceCola / 2;
+                    Node nodoPadre = _nodos[padre];
+
+                    if (tienePirioridadMayorOIgual(nodoPadre, nodo))
                     {
                         //se cambia la posicion del padre
-                        _nodos[nodo.indiceCola] = _nodos[padre];
-                        //al padre, en su nueva posicion, se le cambia el indice
-                        _nodos[nodo.indiceCola].indiceCola = nodo.indiceCola;
+                        _nodos[nodo.indiceCola] = nodoPadre;
+                        //se actualiza el indice
+                        nodoPadre.indiceCola = nodo.indiceCola;
                         //actualizamos indice del nodo
                         nodo.indiceCola = padre;
-                        //scamos a su nuevo padre
-                        padre = nodo.indiceCola / 2;
                     }
                     else
                         break;
@@ -145,7 +175,6 @@ namespace Priority_Queue
                 //ponemos al nodo en la posicion que le corresponde
                 _nodos[nodo.indiceCola] = nodo;
             }
-        }
 
 
         /*
@@ -153,11 +182,11 @@ namespace Priority_Queue
          */
         private void CascadaAbajo(Node nodo)
         {
-            int posicionOriginalNodo = nodo.indiceCola;
-            int indiceHijoIzq = posicionOriginalNodo * 2;
+            int posicionFinalNodo = nodo.indiceCola;
+            int indiceHijoIzq = posicionFinalNodo * 2;
 
             //si es una hoja, hemos terminado
-            if(indiceHijoIzq > _numNodos)
+            if (indiceHijoIzq > _numNodos)
                 return;
 
             int indiceHijoDer = indiceHijoIzq + 1;
@@ -169,14 +198,14 @@ namespace Priority_Queue
                 //comprobamos hijo derecha, si no lo hay hacmoes swap y terminamos (no hay mas niveles)
                 if (indiceHijoDer > _numNodos)
                 {
-                    //modificamos indice del nodo
-                    nodo.indiceCola = hijoIzq.indiceCola;
+                    //modificamos posicionFinal del nodo
+                    posicionFinalNodo = hijoIzq.indiceCola;
                     //cambiamos su posicion en el array
-                    _nodos[nodo.indiceCola] = nodo;
+                    _nodos[posicionFinalNodo] = nodo;
                     //cambiamos el indice del hijo
-                    hijoIzq.indiceCola = posicionOriginalNodo;
+                    hijoIzq.indiceCola = posicionFinalNodo;
                     //colocamos al hijo en su posicion
-                    _nodos[hijoIzq.indiceCola] = hijoIzq;
+                    _nodos[indiceHijoIzq] = hijoIzq;
                     return;
                 }
 
@@ -186,58 +215,62 @@ namespace Priority_Queue
                 {
                     //derecho es el mas pequeno, se sube derecho
                     //cambiamos indice de derecho
-                    hijoDer.indiceCola = posicionOriginalNodo;
-                    //cambiamos indice del nodo
-                    nodo.indiceCola = indiceHijoDer;
+                    hijoDer.indiceCola = posicionFinalNodo;
                     //cambiamos el hijo derecho de poicion
-                    _nodos[posicionOriginalNodo] = hijoDer;
+                    _nodos[posicionFinalNodo] = hijoDer;
+                    //cambiamos posicion final
+                    posicionFinalNodo = indiceHijoDer;
+
                 }
                 else
                 {
                     //el izquierdo tiene la menor prioridad, hacemos swap
                     //cambiamos indice de izqierdo
-                    hijoIzq.indiceCola = posicionOriginalNodo;
+                    hijoIzq.indiceCola = posicionFinalNodo;
+                    //cambiamos el hijo derecho de poicion
+                    _nodos[posicionFinalNodo] = hijoIzq;
                     //cambiamos indice del nodo
                     nodo.indiceCola = indiceHijoIzq;
-                    //cambiamos el hijo derecho de poicion
-                    _nodos[posicionOriginalNodo] = hijoIzq;
+                    
                 }
             }
 
             //no podemos cambiar con hijo izq, pero ¿y con el derecho?
-            else  if (indiceHijoDer > _numNodos)
+            else if (indiceHijoDer > _numNodos)
             {
                 return; //no existe, hemos acabado
             }
-            else {
+            else
+            {
                 Node hijoDer = _nodos[indiceHijoDer];
-                    //existe pero, ¿su prioridad es menor?
-                    if(tienePrioridadMayor(nodo, hijoDer))
-                    {
-                        //cambiamos con el hijo derecho
-                        //cambiamos indice a hijo
-                        hijoDer.indiceCola = posicionOriginalNodo;
-                        //cambiamos indice al padre
-                        nodo.indiceCola = indiceHijoDer;
-                        //cambiamos el padre de posicion
-                        _nodos[posicionOriginalNodo] = hijoDer;
+                //existe pero, ¿su prioridad es menor?
+                if (tienePrioridadMayor(nodo, hijoDer))
+                {
+                    //cambiamos con el hijo derecho
+                    //cambiamos indice a hijo
+                    hijoDer.indiceCola = posicionFinalNodo;                    
+                    //cambiamos el padre de posicion
+                    _nodos[posicionFinalNodo] = hijoDer;
+                    //cambiamos indice al padre
+                    nodo.indiceCola = indiceHijoDer;
 
-                    }
-                    //existe, pero no podemos bajar el nodo a ninguna posicion. Hemos acabado
-                    else
-                        return;
-                }   
+
+                }
+                //existe, pero no podemos bajar el nodo a ninguna posicion. Hemos acabado
+                else
+                    return;
+            }
 
 
             //aqui repetimos el codigo en un bucle ya que de esta manera ahooramos la asignacion del nodo a bajar en cada iteracion
             while (true)
             {
-                posicionOriginalNodo = nodo.indiceCola;
-                indiceHijoIzq = posicionOriginalNodo * 2;
+                indiceHijoIzq = posicionFinalNodo * 2;
 
                 //si es una hoja, hemos terminado
                 if (indiceHijoIzq > _numNodos)
                 {
+                    nodo.indiceCola = posicionFinalNodo;
                     _nodos[nodo.indiceCola] = nodo;
                     break;
                 }
@@ -252,13 +285,13 @@ namespace Priority_Queue
                     if (indiceHijoDer > _numNodos)
                     {
                         //modificamos indice del nodo
-                        nodo.indiceCola = hijoIzq.indiceCola;
-                        //cambiamos su posicion en el array
-                        _nodos[nodo.indiceCola] = nodo;
+                        nodo.indiceCola = indiceHijoIzq;                        
                         //cambiamos el indice del hijo
-                        hijoIzq.indiceCola = posicionOriginalNodo;
+                        hijoIzq.indiceCola = posicionFinalNodo;
+                        //cambiamos su posicion en el array
+                        _nodos[indiceHijoIzq] = nodo;
                         //colocamos al hijo en su posicion
-                        _nodos[hijoIzq.indiceCola] = hijoIzq;
+                        _nodos[posicionFinalNodo] = hijoIzq;
                         break;
                     }
 
@@ -268,28 +301,31 @@ namespace Priority_Queue
                     {
                         //derecho es el mas pequeno, se sube derecho
                         //cambiamos indice de derecho
-                        hijoDer.indiceCola = posicionOriginalNodo;
-                        //cambiamos indice del nodo
-                        nodo.indiceCola = indiceHijoDer;
+                        hijoDer.indiceCola = posicionFinalNodo;                        
                         //cambiamos el hijo derecho de poicion
-                        _nodos[posicionOriginalNodo] = hijoDer;
+                        _nodos[posicionFinalNodo] = hijoDer;
+                        //cambiamos posicion final
+                        posicionFinalNodo = indiceHijoDer;
+
                     }
                     else
                     {
                         //el izquierdo tiene la menor prioridad, hacemos swap
                         //cambiamos indice de derecho
-                        hijoIzq.indiceCola = posicionOriginalNodo;
-                        //cambiamos indice del nodo
-                        nodo.indiceCola = indiceHijoIzq;
+                        hijoIzq.indiceCola = posicionFinalNodo; 
                         //cambiamos el hijo derecho de poicion
-                        _nodos[posicionOriginalNodo] = hijoIzq;
+                        _nodos[posicionFinalNodo] = hijoIzq;
+                        //cambiamos posicion final
+                        posicionFinalNodo = indiceHijoIzq;
+                       
                     }
                 }
 
                 //no podemos cambiar con hijo izq, pero ¿y con el derecho?
                 else if (indiceHijoDer > _numNodos)
                 {
-                    _nodos[nodo.indiceCola] = nodo;
+                    nodo.indiceCola = posicionFinalNodo;
+                    _nodos[posicionFinalNodo] = nodo;
                     break; //no existe, hemos acabado
                 }
                 else
@@ -300,18 +336,22 @@ namespace Priority_Queue
                     {
                         //cambiamos con el hijo derecho
                         //cambiamos indice a hijo
-                        hijoDer.indiceCola = posicionOriginalNodo;
-                        //cambiamos indice al padre
-                        nodo.indiceCola = indiceHijoDer;
+                        hijoDer.indiceCola = posicionFinalNodo;
                         //cambiamos el padre de posicion
-                        _nodos[posicionOriginalNodo] = hijoDer;
+                        _nodos[posicionFinalNodo] = hijoDer;
+                        //cambiamos indice al padre
+                        posicionFinalNodo = indiceHijoDer;
+
 
                     }
                     //existe, pero no podemos bajar el nodo a ninguna posicion. Hemos acabado
                     else
+                    {
+                        nodo.indiceCola = posicionFinalNodo;
                         _nodos[nodo.indiceCola] = nodo;
-                        break; //no existe, hemos acabado
-                }   
+                        break;
+                    }
+                }
             }
         }
 
@@ -326,7 +366,7 @@ namespace Priority_Queue
         public Node Desencolar()
         {
 #if DEBUG
-            if(_numNodos <= 0)
+            if (_numNodos <= 0)
             {
                 throw new InvalidOperationException("Se ha intentado desencolar en una cola vacia");
             }
@@ -367,9 +407,9 @@ namespace Priority_Queue
         public void ActualizarPrioridad(Node nodo, float prioridad)
         {
 #if DEBUG
-            if(nodo == null)
+            if (nodo == null)
                 throw new ArgumentNullException("Se ha intentado actualizar la prioridad de n nodo nulo");
-            if(!Contiene(nodo))
+            if (!Contiene(nodo))
                 throw new InvalidOperationException("Se ha intentado actualizar la prioridad de un nod que no esta en la cola");
 #endif
 
@@ -386,7 +426,7 @@ namespace Priority_Queue
 
             int indicePadre = nodo.indiceCola / 2;
 
-            if(indicePadre > 0 && tienePrioridadMayor(_nodos[indicePadre], nodo))
+            if (indicePadre > 0 && tienePrioridadMayor(_nodos[indicePadre], nodo))
                 cascadaArriba(nodo);
             else
             {

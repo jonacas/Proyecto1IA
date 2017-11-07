@@ -16,7 +16,6 @@ public class AEstrella{
 			return aux;
 		}
 
-
         PriorityQueue abiertos = new PriorityQueue(capacity);
         List<Node> cerrados = new List<Node>();
         bool final = false;
@@ -30,8 +29,16 @@ public class AEstrella{
         abiertos.Encolar(nodoOrigen, nodoOrigen.Cost);
         actualNode = null;
 
+        int contador = 0;
         while (!final)
         {
+            //para evitar bucles (nunca se sabe...)
+            if (contador > 100000)
+            {
+                return null;
+            }
+
+            contador++;
             oldNode = actualNode;
             actualNode = abiertos.Desencolar();
             if (actualNode == null) //si el monticulo se vaica
