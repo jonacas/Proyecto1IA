@@ -34,6 +34,8 @@ public class CreacionGrafo : MonoBehaviour {
 		testPos.y = this.transform.position.y;
 
 		int obstacleLayer = 1<<8;
+        //mascara de cristal
+        obstacleLayer = obstacleLayer | 1 << 9;
 		int waterLayer = 1 << 4;
 	
 		GameObject[] vectorAux = new GameObject[8];

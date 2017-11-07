@@ -30,6 +30,7 @@ public class EnemyMovement : MonoBehaviour {
 	private Vector3 beforeAlert;
 	private Vector3 lastKnownPlayerPosition;
     private Vector3 previousValidUnstuckNode;
+    private int raycastLayer = 1 << 8 | 1;
 
     public bool playerCaptured = false;
     public float thresholdEnemyCapture = 5f;
@@ -212,7 +213,7 @@ public class EnemyMovement : MonoBehaviour {
 			Vector2.Angle (VectorBetweenPlayerAndEnemy, VectorFordwardEnemy) < SafetyAngle)
 		{
 			//print ("Detectamos choque con algo");
-			Physics.Raycast (transform.position, (playerReference.transform.position - transform.position).normalized, out objectHitted/*, 15f, layerDefault*/);
+			Physics.Raycast (transform.position, (playerReference.transform.position - transform.position).normalized, out objectHitted, 30f, raycastLayer);
 			return objectHitted.collider.gameObject.tag == "Player";
 		} 
 		else 
