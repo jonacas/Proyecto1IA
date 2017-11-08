@@ -6,12 +6,16 @@ public class StageData : MonoBehaviour {
 
 	public GameObject player;
 	public static StageData currentInstance;
-
 	public List<EnemyMovement> enemiesInStage;
-
-	private int obstacleLayerMask = 1 << 8;
-
 	public CreacionGrafo CG;
+
+    private int obstacleLayerMask = 1 << 8;
+    private bool cmunicationsEnabeled;
+    public bool ComunicationsEnabeled
+    {
+        get;
+        set;
+    }
 
 	void Awake()
 	{
@@ -106,11 +110,16 @@ public class StageData : MonoBehaviour {
 
 	public void SendAlert(Vector3 detectedPos, int area, int stage)
 	{
-        print("Sending alert...");
-		for (int i = 0; i < enemiesInStage.Count; i++) {
-			if (enemiesInStage [i].enemyIDStage == stage && enemiesInStage [i].enemyIDStagePart == area) {
-				enemiesInStage [i].SendAlertToPosition (detectedPos);
-			}
-		}
+        if (ComunicationsEnabeled)
+        {
+            print("Sending alert...");
+            for (int i = 0; i < enemiesInStage.Count; i++)
+            {
+                if (enemiesInStage[i].enemyIDStage == stage && enemiesInStage[i].enemyIDStagePart == area)
+                {
+                    enemiesInStage[i].SendAlertToPosition(detectedPos);
+                }
+            }
+        }
 	}
 }
