@@ -30,6 +30,7 @@ public class EnemyMovement : MonoBehaviour {
 	private Vector3 beforeAlert;
 	private Vector3 lastKnownPlayerPosition;
     private Vector3 previousValidUnstuckNode;
+    private Vector3 positionFromAnotherZone;
     private int raycastLayer = 1 << 8 | 1;
 
     public bool playerCaptured = false;
@@ -47,7 +48,8 @@ public class EnemyMovement : MonoBehaviour {
 		Patrolling,
 		Alert,
 		ReturnToPreAlert,
-		InCombat
+		InCombat,
+        AlertFromAnotherZone
 	}
 
 	void Awake()
@@ -88,7 +90,7 @@ public class EnemyMovement : MonoBehaviour {
 				print ("Setting new state to BehaviourAlert");
 				beforeAlert = transform.position;
 				StartCoroutine ("BehaviourAlert");
-				moveSpeedMultiplier = 0.4f;
+				moveSpeedMultiplier = 1.5f;
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
 				break;
@@ -105,6 +107,7 @@ public class EnemyMovement : MonoBehaviour {
 			}
 		case EnemyState.Patrolling:
 			{
+                StageData.currentInstance.CancelAlertToOtherZones(enemyIDStage, enemyIDStagePart);
 				print ("Setting new state to Patrolling");
 				StartCoroutine ("BehaviourPatrol");
 				moveSpeedMultiplier = 0.3f;
@@ -112,6 +115,14 @@ public class EnemyMovement : MonoBehaviour {
 				SafetyDistance = OUT_OF_COMBAT_VIEWDIST;
 				break;
 			}
+        case EnemyState.AlertFromAnotherZone:
+            {
+                StartCoroutine("AlertFromAnotherZone");
+                moveSpeedMultiplier = 1.5f;
+                SafetyAngle = IN_COMBAT_FOV;
+                SafetyDistance = IN_COMBAT_VIEWDIST;
+                break;
+            }
 		}
 	}
 	IEnumerator BehaviourAlert()
@@ -127,8 +138,35 @@ public class EnemyMovement : MonoBehaviour {
 			yield return null;
 		}
 		print ("Nothing found on alerted position, switching to ReturnToPreAlert");
+        StageData.currentInstance.CancelAlertToOtherZones(enemyIDStage, enemyIDStagePart);
 		SetNewState (EnemyState.ReturnToPreAlert);
 	}
+
+    IEnumerator AlertFromAnotherZone()
+    {
+        SetNewPath(StageData.currentInstance.GetPathToTarget(transform.position, positionFromAnotherZone));
+
+        while (!IsCurrentPathFinished())
+        {
+            yield return null;
+            if (IsPlayerInVisionRange())
+            {
+                SetNewState(EnemyState.InCombat);
+                StageData.currentInstance.SendAlert(playerReference.transform.position, enemyIDStage, enemyIDStagePart);
+                print("Player found, switching to InCombat");
+            }
+        }
+
+        yield return null;
+        if (IsPlayerInVisionRange())
+        {
+            SetNewState(EnemyState.InCombat);
+            StageData.currentInstance.SendAlert(playerReference.transform.position, enemyIDStage, enemyIDStagePart);
+            print("Player found, switching to InCombat");
+        }
+    }
+
+
 	IEnumerator BehaviourReturnToPreAlert()
 	{
 		if (beforeAlert != null)
@@ -190,6 +228,7 @@ public class EnemyMovement : MonoBehaviour {
 		else if (!playerCaptured && IsPlayerInVisionRange ()) 
 		{
 			enemyLight.color = Color.red;
+            StageData.currentInstance.SendAlert(StageData.currentInstance.GetPlayer().transform.position, enemyIDStage, enemyIDStagePart);
 			SetNewState (EnemyState.InCombat);
 			//print ("Iniciamos protocolo de aviso a enemigos");
 		} 
@@ -277,6 +316,18 @@ public class EnemyMovement : MonoBehaviour {
 		}
 
 	}
+
+    public void AlertFromAnotherZone(Vector3 positionAlert)
+    {
+        positionFromAnotherZone = positionAlert;
+        SetNewState(EnemyState.AlertFromAnotherZone);
+    }
+
+    public void CancelAlertFromAnotherZone()
+    {
+        if(currentState == EnemyState.AlertFromAnotherZone)
+            SetNewState(EnemyState.Patrolling);
+    }
 
 	public bool IsEnemyPatrolling() {return currentState == EnemyState.Patrolling;}
 	public bool IsCurrentPathFinished() { return targetPathPositions.Count == 0;
