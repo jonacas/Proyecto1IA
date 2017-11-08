@@ -79,6 +79,7 @@ public class EnemyMovement : MonoBehaviour {
 		case EnemyState.InCombat:
 			{
 				print ("Setting new state to BehaviourInCombat");
+				StageData.currentInstance.SendAlert(StageData.currentInstance.GetPlayer().transform.position, enemyIDStage, enemyIDStagePart);
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
 				moveSpeedMultiplier = 0.5f;
@@ -90,7 +91,7 @@ public class EnemyMovement : MonoBehaviour {
 				print ("Setting new state to BehaviourAlert");
 				beforeAlert = transform.position;
 				StartCoroutine ("BehaviourAlert");
-				moveSpeedMultiplier = 1.5f;
+				moveSpeedMultiplier = 0.5f;
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
 				break;
@@ -118,7 +119,7 @@ public class EnemyMovement : MonoBehaviour {
         case EnemyState.AlertFromAnotherZone:
             {
                 StartCoroutine("AlertFromAnotherZone");
-                moveSpeedMultiplier = 1.5f;
+                moveSpeedMultiplier = 0.5f;
                 SafetyAngle = IN_COMBAT_FOV;
                 SafetyDistance = IN_COMBAT_VIEWDIST;
                 break;
@@ -228,7 +229,6 @@ public class EnemyMovement : MonoBehaviour {
 		else if (!playerCaptured && IsPlayerInVisionRange ()) 
 		{
 			enemyLight.color = Color.red;
-            StageData.currentInstance.SendAlert(StageData.currentInstance.GetPlayer().transform.position, enemyIDStage, enemyIDStagePart);
 			SetNewState (EnemyState.InCombat);
 			//print ("Iniciamos protocolo de aviso a enemigos");
 		} 

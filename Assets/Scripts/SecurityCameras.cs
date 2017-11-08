@@ -30,6 +30,7 @@ public class SecurityCameras : MonoBehaviour {
 		StartCoroutine ("CheckIfPlayerIsInRange");
 	}
 	void Update () {
+		//print (transform.forward);
 		rotate ();
 	}
 	IEnumerator CheckIfPlayerIsInRange()

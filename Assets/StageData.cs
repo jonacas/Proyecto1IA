@@ -184,7 +184,7 @@ public class StageData : MonoBehaviour {
             case 1:
                 {
                     GameObject.Find("DR QB 2 1").GetComponent<EnemyMovement>().CancelAlertFromAnotherZone();
-                    GameObject.Find("DR QB 2 1 Mirror").GetComponent<EnemyMovement>().CancelAlertFromAnotherZone();
+                    GameObject.Find("DR QB 2 2").GetComponent<EnemyMovement>().CancelAlertFromAnotherZone();
                     break;
                 }
 
