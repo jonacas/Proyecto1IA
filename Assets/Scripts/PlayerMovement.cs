@@ -17,6 +17,13 @@ public class PlayerMovement : MonoBehaviour {
     public GameCamera cameraScript;
     private float offset;
     private float offsetAux;
+    public Petardo petardo;
+
+
+    void Awake8()
+    {
+        petardo = GameObject.Find("Petardo").GetComponent<Petardo>();
+    }
 
     // Use this for initialization
     void Start () {
@@ -111,6 +118,13 @@ public class PlayerMovement : MonoBehaviour {
                 targetRotation = cameraRotation * Quaternion.Euler(0,-90, 0);
             }
 
+        }
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //disparo del petardo
+            petardo.ComenzarCicloLanzamiento();
+            
         }
     }
 }

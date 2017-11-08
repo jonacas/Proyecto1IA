@@ -122,4 +122,14 @@ public class StageData : MonoBehaviour {
             }
         }
 	}
+
+    public void SendNoise(Vector3 noisePos, float hearingRange)
+    {
+        for (int i = 0; i < enemiesInStage.Count; i++)
+        {
+            if(Vector3.Distance(enemiesInStage[i].gameObject.transform.position, noisePos) < hearingRange)
+                enemiesInStage[i].SendAlertToPosition(noisePos);
+        }
+        //lo mismo que send alert, pero esta vez no depende de comunicaciones, si no de rango
+    }
 }
