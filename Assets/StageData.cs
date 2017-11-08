@@ -109,7 +109,7 @@ public class StageData : MonoBehaviour {
 		return camino;
 	}
 
-	public void SendAlert(Vector3 detectedPos, int area, int stage)
+	public void SendAlert(Vector3 detectedPos, int stage, int area)
 	{
         if (ComunicationsEnabeled)
         {

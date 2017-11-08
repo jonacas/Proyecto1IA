@@ -134,11 +134,11 @@ public class EnemyMovement : MonoBehaviour {
 			if (IsPlayerInVisionRange ()) {
 				SetNewState (EnemyState.InCombat);
 				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
-				print ("Player found, switching to InCombat");
+				//print ("Player found, switching to InCombat");
 			}
 			yield return null;
 		}
-		print ("Nothing found on alerted position, switching to ReturnToPreAlert");
+		//print ("Nothing found on alerted position, switching to ReturnToPreAlert");
         StageData.currentInstance.CancelAlertToOtherZones(enemyIDStage, enemyIDStagePart);
 		SetNewState (EnemyState.ReturnToPreAlert);
 	}
@@ -154,7 +154,7 @@ public class EnemyMovement : MonoBehaviour {
             {
                 SetNewState(EnemyState.InCombat);
                 StageData.currentInstance.SendAlert(playerReference.transform.position, enemyIDStage, enemyIDStagePart);
-                print("Player found, switching to InCombat");
+                //print("Player found, switching to InCombat");
             }
         }
 
@@ -163,7 +163,7 @@ public class EnemyMovement : MonoBehaviour {
         {
             SetNewState(EnemyState.InCombat);
             StageData.currentInstance.SendAlert(playerReference.transform.position, enemyIDStage, enemyIDStagePart);
-            print("Player found, switching to InCombat");
+            //print("Player found, switching to InCombat");
         }
     }
 
@@ -176,11 +176,11 @@ public class EnemyMovement : MonoBehaviour {
 			if (IsPlayerInVisionRange ()) {
 				SetNewState (EnemyState.InCombat);
 				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
-				print ("Player found, switching to InCombat");
+				//print ("Player found, switching to InCombat");
 			}
 			yield return null;
 		}
-		print ("Returned to PreAlert position, switching to Patrol");
+		//print ("Returned to PreAlert position, switching to Patrol");
 		SetNewState (EnemyState.Patrolling);
 	}
 	IEnumerator BehaviourPatrol()
@@ -204,14 +204,14 @@ public class EnemyMovement : MonoBehaviour {
 				if (Vector3.Distance (transform.position, playerReference.transform.position) < followPlayerThs) {
 					StopCoroutine ("FollowPlayer");
 					StartCoroutine ("FollowPlayer");
-					print ("Player is close, following directly");
+					//print ("Player is close, following directly");
 				} else {
 					StopCoroutine ("FollowPath");
 					StartCoroutine ("FollowPath");
-					print ("Following path to player");
+					//print ("Following path to player");
 				}
 			} else {
-				print ("Lost Sight of player, switching to Alert");
+				//print ("Lost Sight of player, switching to Alert");
 				lastKnownPlayerPosition = playerReference.transform.position;
 				SetNewState (EnemyState.Alert);
 			}
@@ -310,9 +310,9 @@ public class EnemyMovement : MonoBehaviour {
 		lastKnownPlayerPosition = alertPosition;
 		if (currentState != EnemyState.InCombat) {
 			SetNewState (EnemyMovement.EnemyState.Alert);
-			print (gameObject.name + ": Alert recieved. checking alerted position.");
+			//print (gameObject.name + ": Alert recieved. checking alerted position.");
 		} else {
-			print (gameObject.name + ": Alert recieved. Ignored beacuse already in combat.");
+			//print (gameObject.name + ": Alert recieved. Ignored beacuse already in combat.");
 		}
 
 	}
