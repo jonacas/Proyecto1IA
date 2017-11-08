@@ -89,14 +89,14 @@ public class AEstrella{
             //Debug.Log("Peek = " + abiertos.Peek().gameObject.name); 
 
 
-            if (precission == false && abiertos.Primero == nodoDestino)
-            {
-                final = true;
-            }
-            else if (abiertos.Primero.Cost > nodoDestino.Cost || abiertos.Primero == null)
-            {
-                final = true;
-            }
+			if (abiertos.NumElementos() == 0 || (precission == false && abiertos.Primero == nodoDestino))
+			{
+				final = true;
+			}
+			else if (abiertos.NumElementos() == 0 ||  abiertos.Primero.Cost > nodoDestino.Cost)
+			{
+				final = true;
+			}
         }
 
 

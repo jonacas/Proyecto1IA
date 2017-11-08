@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour {
 
-	private const float MOVE_SPEED = 30;//11.4728f;
-	private const float TURN_RATE = 360f;
+	private const float MOVE_SPEED = 15f;//30;//11.4728f;
+	private const float TURN_RATE = 480f;
 	public float PATH_REACH_NODE_THS = 3f;
 	private const float PATH_REACH_PLAYER_THS = 1f;
 	private const float PATH_STUCK_TIMELIMIT = 5f;
@@ -49,6 +49,12 @@ public class EnemyMovement : MonoBehaviour {
 		ReturnToPreAlert,
 		InCombat
 	}
+
+	void Awake()
+	{}
+
+
+
     void Start()
 	{
 		beforeAlert = transform.position;
@@ -73,7 +79,7 @@ public class EnemyMovement : MonoBehaviour {
 				print ("Setting new state to BehaviourInCombat");
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
-				moveSpeedMultiplier = 0.9f;
+				moveSpeedMultiplier = 0.5f;
 				StartCoroutine ("BehaviourInCombat");
 				break;
 			}
@@ -82,7 +88,7 @@ public class EnemyMovement : MonoBehaviour {
 				print ("Setting new state to BehaviourAlert");
 				beforeAlert = transform.position;
 				StartCoroutine ("BehaviourAlert");
-				moveSpeedMultiplier = 0.6f;
+				moveSpeedMultiplier = 0.4f;
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
 				break;
@@ -91,7 +97,7 @@ public class EnemyMovement : MonoBehaviour {
 			{
 				print ("Setting new state to BehaviourPreAlert");
 				StartCoroutine ("BehaviourReturnToPreAlert");
-				moveSpeedMultiplier = 0.5f;
+				moveSpeedMultiplier = 0.4f;
 				SafetyAngle = OUT_OF_COMBAT_FOV;
 				SafetyDistance = OUT_OF_COMBAT_VIEWDIST;
 
@@ -214,7 +220,7 @@ public class EnemyMovement : MonoBehaviour {
 		{
 			//print ("Detectamos choque con algo");
 			Physics.Raycast (transform.position, (playerReference.transform.position - transform.position).normalized, out objectHitted, 30f, raycastLayer);
-			return objectHitted.collider.gameObject.tag == "Player";
+			return objectHitted.collider != null && objectHitted.collider.gameObject.tag == "Player";
 		} 
 		else 
 		{
