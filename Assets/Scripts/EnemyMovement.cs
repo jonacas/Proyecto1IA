@@ -182,9 +182,10 @@ public class EnemyMovement : MonoBehaviour {
 			SetNewPath(StageData.currentInstance.GetPathToTarget(transform.position, beforeAlert));
 		while (!IsCurrentPathFinished ()) {
 			if (IsPlayerInVisionRange ()) {
-				SetNewState (EnemyState.InCombat);
+                SetNewState (EnemyState.InCombat);
 				StageData.currentInstance.SendAlert (playerReference.transform.position, enemyIDStage, enemyIDStagePart);
 				//print ("Player found, switching to InCombat");
+
 			}
 			yield return null;
 		}
@@ -219,6 +220,7 @@ public class EnemyMovement : MonoBehaviour {
 					//print ("Following path to player");
 				}
 			} else {
+                GameObject.Find("Canvas").GetComponent<TextGenerator>().Perdido();
 				//print ("Lost Sight of player, switching to Alert");
 				lastKnownPlayerPosition = playerReference.transform.position;
 				SetNewState (EnemyState.Alert);
@@ -240,8 +242,9 @@ public class EnemyMovement : MonoBehaviour {
 		{
 			enemyLight.color = Color.red;
 			SetNewState (EnemyState.InCombat);
-			//print ("Iniciamos protocolo de aviso a enemigos");
-		} 
+            GameObject.Find("Canvas").GetComponent<TextGenerator>().detectadoText(enemyIDStagePart);
+            //print ("Iniciamos protocolo de aviso a enemigos");
+        } 
 		else 
 		{
 			enemyLight.color = Color.white;

@@ -10,6 +10,7 @@ public class TextGenerator : MonoBehaviour {
     private string[] alerta = new string[6];
     private string[] presiguiendo = new string[6];
     private float timer = 0;
+    private bool persiguiendo = false;
 
     // Use this for initialization
     void Start () {
@@ -22,12 +23,12 @@ public class TextGenerator : MonoBehaviour {
         alerta[5] = "¿Que demonios era eso? Voy a investigar en sector ";
 
 
-        desaparecido[0] = "Hemos perdido al sospechoso";
-        desaparecido[1] = "Se ha perdido la pis";
+        desaparecido[0] = "Hemos perdido al sospechoso.";
+        desaparecido[1] = "Se ha perdido la pista.";
         desaparecido[2] = "El ladron se ha esfuamado";
-        desaparecido[3] = "Lo hemos perdido, volved a vuestros puestos";
-        desaparecido[4] = "El intruso ha desaparecido";
-        desaparecido[5] = "Vuelvan a sus patruyas";
+        desaparecido[3] = "Lo hemos perdido, volved a vuestros puestos.";
+        desaparecido[4] = "El intruso ha desaparecido.";
+        desaparecido[5] = "Vuelvan a sus patruyas.";
 
 
 
@@ -42,6 +43,8 @@ public class TextGenerator : MonoBehaviour {
 
             if (timer <= 0) {
 
+                texto.text = "";
+                texto.enabled = false;
                 
             }
 
@@ -51,15 +54,34 @@ public class TextGenerator : MonoBehaviour {
 
     public void detectadoText(int zone) {
 
-        int i = Random.Range(0, 5);
-        texto.text = alerta[i] + zone;
-
+        if (!persiguiendo) {
+            int i = Random.Range(0, 5);
+            texto.enabled = true;
+            texto.text = "Guardia : " + alerta[i] + zone + ".";
+            timer = 3;
+            persiguiendo = true;
+        }
+        
     }
 
     public void Perdido() {
 
-        int i = Random.Range(0, 5);
-        texto.text = desaparecido[i];
+        if (persiguiendo)
+        {
+            int i = Random.Range(0, 5);
+            texto.enabled = true;
+            texto.text = "Guardia : " + desaparecido[i];
+            timer = 3;
+            persiguiendo = false;
+        }
+       
+    }
+
+    public void Camaras(int zona) {
+
+        texto.enabled = true;
+        texto.text = "Camara: Enemigo detectado en sector " + zona;
+        timer = 3;
 
     }
 }

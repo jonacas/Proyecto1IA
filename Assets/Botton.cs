@@ -14,6 +14,7 @@ public class Botton : MonoBehaviour {
     
     void OnTriggerStay(Collider other)
     {
+        GameObject.Find("Pulsar").GetComponent<UnityEngine.UI.Text>().enabled = true;
         if(!pulsado)
             {
             if (Input.GetKeyDown("e")) { 
@@ -25,5 +26,9 @@ public class Botton : MonoBehaviour {
 			}
         }
         
+    }
+    void OnTriggerExit(Collider other) {
+        GameObject.Find("Pulsar").GetComponent<UnityEngine.UI.Text>().enabled = false;
+
     }
 }

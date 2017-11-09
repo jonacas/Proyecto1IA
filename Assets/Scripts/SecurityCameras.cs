@@ -37,7 +37,8 @@ public class SecurityCameras : MonoBehaviour {
 	{
 		while (true) {
 			if (IsPlayerInVisionRange ()) {
-				StageData.currentInstance.SendAlert (
+                GameObject.Find("Canvas").GetComponent<TextGenerator>().Camaras(idStagePart);
+                StageData.currentInstance.SendAlert (
 									StageData.currentInstance.GetPlayer().transform.position, idStage, idStagePart);
 			}
 			yield return new WaitForSeconds (0.5f);
