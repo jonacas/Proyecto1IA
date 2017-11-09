@@ -17,6 +17,8 @@ public class StageData : MonoBehaviour {
         set;
     }
 
+    private AEstrella aStar;
+
 	public GameObject[] tobeInteractedList;
 	private bool[] pressedButtons = { false, false, false };
 
@@ -25,6 +27,7 @@ public class StageData : MonoBehaviour {
 	{
 		currentInstance = this;
         ComunicationsEnabeled = true;
+        aStar = this.GetComponent<AEstrella>();
 	}
 	public GameObject GetPlayer()
 	{
@@ -102,7 +105,7 @@ public class StageData : MonoBehaviour {
 			final = closestNode;
 		}
 
-		camino = AEstrella.FindPath(final, inicio, CG.filas * CG.columnas, false, true);
+		camino = aStar.FindPath(final, inicio, CG.filas * CG.columnas, false, true);
 
 		foreach (GameObject n in CG.nodeMap)
 		{

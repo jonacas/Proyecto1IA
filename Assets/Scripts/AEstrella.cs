@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
 
-public class AEstrella{
+public class AEstrella : MonoBehaviour{
 
     public const bool MAS_PRECISO = true, MAS_RAPIDO = false;
 
-	public static List<Transform> FindPath(Node origin, Node destiny, int capacity, bool precission, bool manhattan)
+	public List<Transform> FindPath(Node origin, Node destiny, int capacity, bool precission, bool manhattan)
     {
        // Debug.Log("INICIO de nodo " + origin.gameObject.name + " a ndodo " + destiny.gameObject.name);
 		if (origin == destiny) {
@@ -15,6 +15,31 @@ public class AEstrella{
 			aux.Add(origin.gameObject.transform);
 			return aux;
 		}
+
+        IEnumerator corAux = Work(origin, destiny, capacity, precission, manhattan);
+        StartCoroutine(Work(origin, destiny, capacity, precission, manhattan));
+        //Devolver camino
+		List<Transform> path = new List<Transform>();
+        Node actualNode = destiny;                   //Reciclamos actualNode para usarlo como auxiliar
+        while (actualNode != null)
+        {
+			path.Add(actualNode.gameObject.transform);
+            actualNode = actualNode.Route;
+        }
+        return path; // borrar mas tarde
+    }
+
+	private static float heuristicaManhattan(Vector3 origen, Vector3 destino)
+	{
+		//la suma de las diferencias componente a componente en un espacio en 2 dimensiones
+		float diferencia = 0;
+		diferencia += Mathf.Abs (destino.x - origen.x);
+		diferencia += Mathf.Abs (destino.z - origen.z);
+		return diferencia;
+	}
+
+    IEnumerator Work(Node origin, Node destiny, int capacity, bool precission, bool manhattan)
+    {
 
         PriorityQueue abiertos = new PriorityQueue(capacity);
         List<Node> cerrados = new List<Node>();
@@ -30,15 +55,17 @@ public class AEstrella{
         actualNode = null;
 
         int contador = 0;
+        int fragmentador = 0;
         while (!final)
         {
             //para evitar bucles (nunca se sabe...)
             if (contador > 100000)
             {
-                return null;
+                yield break;
             }
 
             contador++;
+            fragmentador++;
             oldNode = actualNode;
             actualNode = abiertos.Desencolar();
             if (actualNode == null) //si el monticulo se vaica
@@ -56,10 +83,10 @@ public class AEstrella{
                     value.nodo.Cost = actualNode.Cost + value.distancia;
 
                     //calculamos nueva prioridad del nodo
-					if(manhattan)
-						value.nodo.Estimated = value.nodo.Cost + heuristicaManhattan(value.nodo.gameObject.transform.position, destiny.transform.position);
-					else//euclideana
-                    	value.nodo.Estimated = value.nodo.Cost + Vector3.Distance(value.nodo.gameObject.transform.position, destiny.transform.position);
+                    if (manhattan)
+                        value.nodo.Estimated = value.nodo.Cost + heuristicaManhattan(value.nodo.gameObject.transform.position, destiny.transform.position);
+                    else//euclideana
+                        value.nodo.Estimated = value.nodo.Cost + Vector3.Distance(value.nodo.gameObject.transform.position, destiny.transform.position);
 
                     //actualizar ruta hasta el nodo
                     value.nodo.Route = actualNode;
@@ -89,37 +116,23 @@ public class AEstrella{
             //Debug.Log("Peek = " + abiertos.Peek().gameObject.name); 
 
 
-			if (abiertos.NumElementos() == 0 || (precission == false && abiertos.Primero == nodoDestino))
-			{
-				final = true;
-			}
-			else if (abiertos.NumElementos() == 0 ||  abiertos.Primero.Cost > nodoDestino.Cost)
-			{
-				final = true;
-			}
-        }
+            if (abiertos.NumElementos() == 0 || (precission == false && abiertos.Primero == nodoDestino))
+            {
+                final = true;
+            }
+            else if (abiertos.NumElementos() == 0 || abiertos.Primero.Cost > nodoDestino.Cost)
+            {
+                final = true;
+            }
 
-
-        //Devolver camino
-		List<Transform> path = new List<Transform>();
-        actualNode = nodoDestino;                   //Reciclamos actualNode para usarlo como auxiliar
-        while (actualNode != null)
-        {
-			path.Add(actualNode.gameObject.transform);
-            actualNode = actualNode.Route;
+            if (fragmentador >= 100)
+            {
+                fragmentador = 0;
+                yield return null;
+            }
         }
 
         abiertos = null;
         cerrados.Clear();
-        return path; // borrar mas tarde
     }
-
-	private static float heuristicaManhattan(Vector3 origen, Vector3 destino)
-	{
-		//la suma de las diferencias componente a componente en un espacio en 2 dimensiones
-		float diferencia = 0;
-		diferencia += Mathf.Abs (destino.x - origen.x);
-		diferencia += Mathf.Abs (destino.z - origen.z);
-		return diferencia;
-	}
 }
