@@ -8,7 +8,8 @@ public class Petardo : MonoBehaviour {
     private const float TIEMPO_EXPLOSION = 3f;
     private const float RANGO_RUIDO = 100f;
     private const float FUERZA_LANZAMIENTO = 1000f;
-    private const float TIEMPO_LUZ = 0.2f;
+    private const float TIEMPO_LUZ = 0.5f;
+    private const int INTENSIDAD_INICIAL_LUZ = 1000;
 
     ParticleSystem sistemaParticulas;
     float tiempoLanzado;
@@ -41,7 +42,10 @@ public class Petardo : MonoBehaviour {
                 StageData.currentInstance.SendNoise(this.transform.position, RANGO_RUIDO);
                 cuentaAtras = false;
                 luz.enabled = true;
+                this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y + 1f, transform.position.z);
+                rb.isKinematic = true;
                 luzEncendida = true;
+                luz.intensity = INTENSIDAD_INICIAL_LUZ;
             }
         }
 
@@ -51,6 +55,10 @@ public class Petardo : MonoBehaviour {
             {
                 luz.enabled = false;
                 luzEncendida = false;
+            }
+            else
+            {
+                luz.intensity = INTENSIDAD_INICIAL_LUZ - (1000 * (Time.time - (tiempoLanzado) - TIEMPO_EXPLOSION) / TIEMPO_LUZ);
             }
         }
 
@@ -64,6 +72,7 @@ public class Petardo : MonoBehaviour {
         this.transform.position = modeloJugador.transform.position + dir * DISTANCIA_A_JUGADOR;
         this.GetComponent<MeshRenderer>().enabled = true;
         dir.y = dir.y * +5;
+        rb.isKinematic = false;
         rb.AddForce(dir * FUERZA_LANZAMIENTO);
         cuentaAtras = true;
     }

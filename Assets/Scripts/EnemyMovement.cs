@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour {
 
-	private const float MOVE_SPEED = 15f;//30;//11.4728f;
+	private const float MOVE_SPEED = 9.4728f;
 	private const float TURN_RATE = 480f;
 	public float PATH_REACH_NODE_THS = 3f;
 	private const float PATH_REACH_PLAYER_THS = 1f;
