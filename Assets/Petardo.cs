@@ -8,19 +8,24 @@ public class Petardo : MonoBehaviour {
     private const float TIEMPO_EXPLOSION = 3f;
     private const float RANGO_RUIDO = 100f;
     private const float FUERZA_LANZAMIENTO = 1000f;
+    private const float TIEMPO_LUZ = 0.2f;
 
     ParticleSystem sistemaParticulas;
     float tiempoLanzado;
     public GameObject modeloJugador;
     public GameObject camera;
-    bool cuentaAtras;
+    bool cuentaAtras, luzEncendida;
     Rigidbody rb;
+    Light luz;
 
 	// Use this for initialization
 	void Awake () {
         sistemaParticulas = GetComponentInChildren<ParticleSystem>();
         modeloJugador = GameObject.Find("PlayerModel");
+        camera = GameObject.Find("Main Camera");
         rb = this.gameObject.GetComponent<Rigidbody>();
+        luz = this.GetComponent<Light>();
+        luz.enabled = false;
 	}
 
 
@@ -35,6 +40,17 @@ public class Petardo : MonoBehaviour {
                 this.GetComponent<MeshRenderer>().enabled = false;
                 StageData.currentInstance.SendNoise(this.transform.position, RANGO_RUIDO);
                 cuentaAtras = false;
+                luz.enabled = true;
+                luzEncendida = true;
+            }
+        }
+
+        if (luzEncendida)
+        {
+            if (Time.time - (tiempoLanzado) >= (TIEMPO_EXPLOSION + TIEMPO_LUZ))
+            {
+                luz.enabled = false;
+                luzEncendida = false;
             }
         }
 
