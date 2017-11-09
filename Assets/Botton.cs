@@ -5,11 +5,10 @@ using UnityEngine;
 public class Botton : MonoBehaviour {
 
     public Animator anim;
-    public Animator otroObjeto;
+    //public Animator otroObjeto;
 
     //si cortar comunicaciones == true, se cortaran las comunicaciones Y NADA MAS
     public bool cortarComunicaciones;
-
 
     private bool pulsado;
     
@@ -20,12 +19,10 @@ public class Botton : MonoBehaviour {
             if (Input.GetKeyDown("e")) { 
                 anim.enabled = true;
                 pulsado = true;
+				StageData.currentInstance.PressedButton (this.gameObject.name);
 
-                if (!cortarComunicaciones)
-                    otroObjeto.enabled = true;
-                else
-                    StageData.currentInstance.ComunicationsEnabeled = false;
-            }
+
+			}
         }
         
     }
