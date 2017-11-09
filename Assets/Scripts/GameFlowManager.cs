@@ -18,7 +18,7 @@ public class GameFlowManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		if (Input.GetKeyDown (KeyCode.T)) //Abrir menu de pausa
+		/*if (Input.GetKeyDown (KeyCode.T)) //Abrir menu de pausa
 		{
 			endGameCanvas.SetActive(true);
 			Time.timeScale = 0f;
@@ -30,7 +30,7 @@ public class GameFlowManager : MonoBehaviour {
 			endGameCanvas.SetActive(false);
 			Time.timeScale = 1f;
 			Cursor.lockState = CursorLockMode.Locked;
-		}
+		}*/
 		
 	}
 
@@ -45,7 +45,10 @@ public class GameFlowManager : MonoBehaviour {
 	 public void QuitToMainMenu()
 	{
 		//Aqui cambiaremos el codigo de arriba, pero con la escena del menu.
-		
+		SceneManager.LoadScene ("MainMenu");
+		endGameCanvas.SetActive (false);
+		Time.timeScale = 1f;
+		Cursor.lockState = CursorLockMode.None;
 	}
 
 

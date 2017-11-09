@@ -17,6 +17,10 @@ public class StageData : MonoBehaviour {
         set;
     }
 
+	public GameObject[] tobeInteractedList;
+	private bool[] pressedButtons = { false, false, false };
+
+
 	void Awake()
 	{
 		currentInstance = this;
@@ -237,4 +241,53 @@ public class StageData : MonoBehaviour {
         }
         //lo mismo que send alert, pero esta vez no depende de comunicaciones, si no de rango
     }
+
+	public void PressedButton(string buttonName)
+	{
+		switch (buttonName)
+		{
+		case "Boton1":
+			{
+				tobeInteractedList [0].SetActive (false);
+				pressedButtons [0] = true;
+				break;
+			}
+		case "Boton2":
+			{
+				tobeInteractedList [1].SetActive (false);
+				pressedButtons [1] = true;
+				break;
+			}
+		case "Boton3":
+			{
+				tobeInteractedList [2].SetActive (false);
+				pressedButtons [2] = true;
+				break;
+			}
+		case "BotonComunicaciones":
+			{
+				StageData.currentInstance.ComunicationsEnabeled = false;
+				break;
+			}
+		default:
+			{
+				break;
+			}
+		}            
+
+		for (int i = 0; i < pressedButtons.Length; i++) 
+		{
+			if (!pressedButtons[i]) 
+			{
+				return;
+			}
+		}
+		//Si llega hasta aqui, hemos desbloqueado la ruta alternativa.
+		tobeInteractedList[3].SetActive(false);
+		tobeInteractedList[4].SetActive(false);
+	}
+
+
+
+
 }
