@@ -43,6 +43,8 @@ public class EnemyMovement : MonoBehaviour {
 
 	public List<Transform> patrolPositions;
 
+	public GameOver	gameOverReference;
+
 	public enum EnemyState
 	{
 		Patrolling,
@@ -230,7 +232,7 @@ public class EnemyMovement : MonoBehaviour {
 		if (Vector3.Distance (transform.position, playerReference.transform.position) < thresholdEnemyCapture 
 			&& currentState == EnemyState.InCombat)
 		{
-			EndGamePanelManager.currentInstance.EndGame ();
+			gameOverReference.ExecuteGameOver ();
 			PlayerCatched ();
 			//print ("Hemos parado corutina del enemigo");
 		}

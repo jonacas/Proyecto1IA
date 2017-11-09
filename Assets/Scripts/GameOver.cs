@@ -55,9 +55,9 @@ public class GameOver : MonoBehaviour {
 				break;
 			case STATE_END:
 				colorText.a -= Time.deltaTime * gradientSpeed;
-				colorImage.a = gameOverImage.color.a - Time.deltaTime * gradientSpeed;
+				//colorImage.a = gameOverImage.color.a - Time.deltaTime * gradientSpeed;
 				gameOverText.color = colorText;
-				gameOverImage.color = colorImage;
+				//gameOverImage.color = colorImage;
 				if (gameOverText.color.a <= 0)
 					SceneManager.LoadScene (SceneManager.GetActiveScene().name);
 				break;

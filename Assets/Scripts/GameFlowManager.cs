@@ -8,6 +8,12 @@ public class GameFlowManager : MonoBehaviour {
 
 	public GameObject endGameCanvas;
 
+	public static GameFlowManager currentInstance;
+
+	void Awake()
+	{
+		currentInstance = this;
+	}
 
 	// Use this for initialization
 	void Start () 
@@ -34,21 +40,30 @@ public class GameFlowManager : MonoBehaviour {
 		
 	}
 
+	public void ShowGameOver()
+	{
+		endGameCanvas.SetActive(true);
+		Time.timeScale = 0f;
+		Cursor.lockState = CursorLockMode.None;
+	}
+		
+
 	 public void RestartLevel()
 	{
-		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 		endGameCanvas.SetActive (false);
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.Locked;
+		SceneManager.LoadScene (1);
 	}
 
 	 public void QuitToMainMenu()
 	{
 		//Aqui cambiaremos el codigo de arriba, pero con la escena del menu.
-		SceneManager.LoadScene ("MainMenu");
 		endGameCanvas.SetActive (false);
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.None;
+		SceneManager.LoadScene ("MainMenu");
+
 	}
 
 
