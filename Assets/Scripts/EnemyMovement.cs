@@ -78,7 +78,8 @@ public class EnemyMovement : MonoBehaviour {
 		switch (newstate) {
 		case EnemyState.InCombat:
 			{
-				print ("Setting new state to BehaviourInCombat");
+				//print ("Setting new state to BehaviourInCombat");
+				currentState = EnemyState.InCombat;
 				StageData.currentInstance.SendAlert(StageData.currentInstance.GetPlayer().transform.position, enemyIDStage, enemyIDStagePart);
 				SafetyAngle = IN_COMBAT_FOV;
 				SafetyDistance = IN_COMBAT_VIEWDIST;
@@ -88,7 +89,8 @@ public class EnemyMovement : MonoBehaviour {
 			}
 		case EnemyState.Alert:
 			{
-				print ("Setting new state to BehaviourAlert");
+				//print ("Setting new state to BehaviourAlert");
+				currentState = EnemyState.Alert;
 				beforeAlert = transform.position;
 				StartCoroutine ("BehaviourAlert");
 				moveSpeedMultiplier = 0.5f;
@@ -98,7 +100,8 @@ public class EnemyMovement : MonoBehaviour {
 			}
 		case EnemyState.ReturnToPreAlert:
 			{
-				print ("Setting new state to BehaviourPreAlert");
+				currentState = EnemyState.ReturnToPreAlert;
+				//print ("Setting new state to BehaviourPreAlert");
 				StartCoroutine ("BehaviourReturnToPreAlert");
 				moveSpeedMultiplier = 0.4f;
 				SafetyAngle = OUT_OF_COMBAT_FOV;
@@ -109,7 +112,8 @@ public class EnemyMovement : MonoBehaviour {
 		case EnemyState.Patrolling:
 			{
                 StageData.currentInstance.CancelAlertToOtherZones(enemyIDStage, enemyIDStagePart);
-				print ("Setting new state to Patrolling");
+				//print ("Setting new state to Patrolling");
+				currentState = EnemyState.Patrolling;
 				StartCoroutine ("BehaviourPatrol");
 				moveSpeedMultiplier = 0.3f;
 				SafetyAngle = OUT_OF_COMBAT_FOV;
@@ -118,6 +122,7 @@ public class EnemyMovement : MonoBehaviour {
 			}
         case EnemyState.AlertFromAnotherZone:
             {
+				currentState = EnemyState.AlertFromAnotherZone;
                 StartCoroutine("AlertFromAnotherZone");
                 moveSpeedMultiplier = 0.5f;
                 SafetyAngle = IN_COMBAT_FOV;
@@ -128,6 +133,7 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	IEnumerator BehaviourAlert()
 	{
+		//print (lastKnownPlayerPosition);
 		if (lastKnownPlayerPosition != null)
 			SetNewPath (StageData.currentInstance.GetPathToTarget (transform.position, lastKnownPlayerPosition));
 		while (!IsCurrentPathFinished ()) {
@@ -221,9 +227,11 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	void Update()
 	{
-		if (Vector3.Distance (transform.position, playerReference.transform.position) < thresholdEnemyCapture)
+		if (Vector3.Distance (transform.position, playerReference.transform.position) < thresholdEnemyCapture 
+			&& currentState == EnemyState.InCombat)
 		{
-			//PlayerCatched ();
+			EndGamePanelManager.currentInstance.EndGame ();
+			PlayerCatched ();
 			//print ("Hemos parado corutina del enemigo");
 		}
 		else if (!playerCaptured && IsPlayerInVisionRange ()) 

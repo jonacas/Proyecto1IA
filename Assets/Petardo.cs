@@ -69,7 +69,8 @@ public class Petardo : MonoBehaviour {
         Vector3 dir = camera.transform.forward;
         sistemaParticulas.Stop();
         tiempoLanzado = Time.time;
-        this.transform.position = modeloJugador.transform.position + dir * DISTANCIA_A_JUGADOR;
+		this.transform.position = new Vector3( modeloJugador.transform.position.x, modeloJugador.transform.position.y + 5f, 
+											   modeloJugador.transform.position.z) + dir * DISTANCIA_A_JUGADOR;
         this.GetComponent<MeshRenderer>().enabled = true;
         dir.y = dir.y * +5;
         rb.isKinematic = false;

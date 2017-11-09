@@ -38,7 +38,6 @@ public class StageData : MonoBehaviour {
 		List<Transform> camino;
 
 		Node inicio, final;
-
 		int initX = (int) Mathf.Round(requester.x / CG.incrementoX);
 		int initZ = (int) Mathf.Round(requester.z / CG.incrementoZ);
 		int finalX = (int) Mathf.Round(target.x / CG.incrementoX);
@@ -129,7 +128,7 @@ public class StageData : MonoBehaviour {
                 }
             }
 
-            sendAlertToOtherZones(area, stage);
+			sendAlertToOtherZones(stage, area);
         }
 	}
 

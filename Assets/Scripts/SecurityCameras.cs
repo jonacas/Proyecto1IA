@@ -37,7 +37,8 @@ public class SecurityCameras : MonoBehaviour {
 	{
 		while (true) {
 			if (IsPlayerInVisionRange ()) {
-				StageData.currentInstance.SendAlert (playerReference.transform.position, idStage, idStagePart);
+				StageData.currentInstance.SendAlert (
+									StageData.currentInstance.GetPlayer().transform.position, idStage, idStagePart);
 			}
 			yield return new WaitForSeconds (0.5f);
 		}
@@ -69,7 +70,7 @@ public class SecurityCameras : MonoBehaviour {
 		{
 			//print ("Detectamos choque con algo");
 			Physics.Raycast (transform.position, (playerReference.transform.position - transform.position).normalized, out objectHitted/*, 15f, layerDefault*/);
-			return objectHitted.collider.gameObject.tag == "Player";
+			return objectHitted.collider != null && objectHitted.collider.gameObject.tag == "Player";
 		} 
 		else 
 		{

@@ -29,6 +29,8 @@ public class EndGamePanelManager : MonoBehaviour {
 		if (animationStarted)
 			return;
 		animationStarted = true;
+		headerInfo.gameObject.SetActive (true);
+		subInfo.gameObject.SetActive (true);
 		headerInfo.text = endgameHeader;
 		subInfo.text = endgameSubdesc;
 		StartCoroutine ("FadeAndBackToMainMenu");
@@ -60,6 +62,7 @@ public class EndGamePanelManager : MonoBehaviour {
 			yield return null;
 		}
 		yield return new WaitForSeconds (0.25f);
+		Cursor.lockState = CursorLockMode.None;
 		SceneManager.LoadScene (0);
 	}
 }

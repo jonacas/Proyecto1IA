@@ -59,7 +59,7 @@ public class AEstrella : MonoBehaviour{
         while (!final)
         {
             //para evitar bucles (nunca se sabe...)
-            if (contador > 100000)
+            if (contador > 10000)
             {
                 yield break;
             }
@@ -125,7 +125,7 @@ public class AEstrella : MonoBehaviour{
                 final = true;
             }
 
-            if (fragmentador >= 100)
+            if (fragmentador >= 400f /*100*/)
             {
                 fragmentador = 0;
                 yield return null;

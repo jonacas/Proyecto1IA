@@ -142,7 +142,7 @@ public class Node : MonoBehaviour
             distanciaActual = Vector3.Distance(transform.position, value.transform.position);
 
             if (Water || nodoActual.Water)
-                distanciaActual *= 3;
+                distanciaActual *= 5;
 
             if (nodoActual != null)
             {
