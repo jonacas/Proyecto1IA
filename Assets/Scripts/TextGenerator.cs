@@ -80,7 +80,13 @@ public class TextGenerator : MonoBehaviour {
     public void Camaras(int zona) {
 
         texto.enabled = true;
-        texto.text = "Camara: Enemigo detectado en sector " + zona;
+		if (StageData.currentInstance.ComunicationsEnabeled) {
+			texto.text = "Camara: Enemigo detectado en sector " + zona;
+		} 
+		else
+		{
+			texto.text = "SISTEMA DE COMUNICACIONES DESACTIVADO";
+		}       
         timer = 3;
 
     }
