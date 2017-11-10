@@ -58,6 +58,7 @@ public class PauseMenuManager : MonoBehaviour {
 		StartCoroutine ("FadeOut");
 		gamePaused = false;
 		Time.timeScale = 1;
+		Cursor.lockState = CursorLockMode.Locked;
 	}
 	public void PauseGame()
 	{
@@ -65,6 +66,7 @@ public class PauseMenuManager : MonoBehaviour {
 			return;
 		StartCoroutine ("FadeIn");
 		gamePaused = true;
+		Cursor.lockState = CursorLockMode.None;
 		Time.timeScale = 0;
 		for (int i = 0; i < buttons.Count; i++) {
 			buttons [i].transform.localScale = Vector3.one;
